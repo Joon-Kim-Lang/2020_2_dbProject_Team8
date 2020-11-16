@@ -1,0 +1,32 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-Type" content="text/html" charset="utf-8">
+    <title>Title</title>
+  </head>
+  <body>
+    <div class = parTasks>
+    <p> 참여 중인 테스크 목록 </p>
+
+    {% for task in parTasks %}
+      {% if task.status == 'P' %}
+        <o1><a href="none"> {{task.TaskName}}</a></o1></br>
+      {% else %}
+        <o1><a href="none"> {{task.TaskName}}(승인대기)</a></o1></br>
+
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class = nonParTasks>
+    <p> <미참여 중인 테스크 목록> </p>
+
+    {% for task in nonParTasks %}
+      <o1><a href="none"> {{task.TaskName}}</a></o1>
+    {% endfor %}
+  </div>
+
+  </body>
+</html>
