@@ -18,5 +18,7 @@ from .import views
 
 app_name = 'submitter'
 urlpatterns = [
-    path('submitMain/', views.showSubmitMain, name = 'submitMain'),
+    path('submitMain/', views.submitMain, name = 'submitMain'),
+    path('submitMain/task-<int:taskid>/detail', views.taskDetail, name='taskDetail'),
+    path('submitMain/task-<int:taskid>/apply', views.taskApply, name='taskApply'),
 ]
