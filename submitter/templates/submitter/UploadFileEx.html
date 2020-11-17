@@ -1,0 +1,27 @@
+<form action="{% url "submitter:uploadTest" %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
+{% csrf_token %}
+<div class="form-group">
+    submitNum : <input type='text' name="name"></br>
+    startDate : <input type='text' name="major"></br>
+    endDate : <input type='text' name="age"></br>
+
+    <p> 스키마  타입 선택</p>
+    <datalist id="goods">
+      <select>
+        {% for data in context %}
+        <option value="{{data.NAME}}"></option>
+        {% endfor %}
+      </select>
+    </datalist>
+
+
+    <label for="name" class="csv_file">CSV 파일 업로드: </label>
+    <div class="col-md-8">
+        <input type="file" name="csv_file" id="csv_file" required="True" class="form-control">
+    </div>
+</div>
+<div class="form-group">
+    <input type="submit" name='Register'></br>
+
+</div>
+</form>

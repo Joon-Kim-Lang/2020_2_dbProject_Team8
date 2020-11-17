@@ -19,4 +19,5 @@ from .import views
 app_name = 'submitter'
 urlpatterns = [
     path('submitMain/', views.showSubmitMain, name = 'submitMain'),
+    path('uploadTest/', views.upload_csv, name = 'uploadTest'),
 ]
