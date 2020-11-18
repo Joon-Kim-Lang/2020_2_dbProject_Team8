@@ -16,9 +16,8 @@ Including another URLconf
 from django.urls import path
 from .import views
 
-app_name = 'submitter'
+# app_name = 'submitter'
 urlpatterns = [
-    path('submitMain/', views.submitMain, name = 'submitMain'),
-    path('submitMain/task-<int:taskid>/detail', views.taskDetail, name='taskDetail'),
-    path('submitMain/task-<int:taskid>/apply', views.taskApply, name='taskApply'),
+    path('submitMain/', views.showSubmitMain, name = 'submitMain'),
+    path('submitMain/task-apply/<int:', views.taskApply, name='taskApply'),
 ]
