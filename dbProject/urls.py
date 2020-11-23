@@ -27,4 +27,5 @@ urlpatterns = [
     # ==========================
     # Register
     path('api/register/', views.register),
+    path('api/task/create/', views.createTask),
 ]
