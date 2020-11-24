@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-Type" content="text/html" charset="utf-8">
+  <title>원본 데이터 타입 신청</title>
+</head>
+
+<body>
+  <h1>원본 데이터 타입 신청</h1>
+  <a href="">돌아가기</a>
+  <h2>
+    <신청 시 안내사항>
+  </h2>
+  <div id="how">
+    1. 스키마 정보란에는 칼럼 명들을 ','로 구분지어 작성해주시면 됩니다.<br>
+    ex) 칼럼 명들이 서울, 대전, 대구, 부산일 경우 : "서울,대전,대구,부산"을 입력<br>
+    2. 자료형 정보란에는 각 칼럼의 자료형을 스키마 정보란에 기재한 순서에 맞춰 ','로 구분지어 작성해주세요.<br>
+    ex) 서울, 대전, 대구, 부산의 자료형이 각각 int, string, string, int일 경우 : "int,string,string,int"을 입력<br>
+
+    ** 반드시 양식에 맞춰 작성해주세요. 양식이 맞지 않을 경우, 신청 내용이 승인되지 않을 수 있습니다.
+  </div>
+  <div id="possible-types">
+    <p><u>가능한 데이터 타입</u></p>
+    <p>int, string, date, time, float, boolean</p>
+  </div>
+
+  <h2>
+    <현재 태스크에서 사용되고 있는 데이터 타입>
+  </h2>
+  <table>
+    <th>데이터 타입 명</th>
+    <th>스키마 정보</th>
+    <th>자료형 정보</th>
+    {% for dt in all_dt%}
+    <tr class="original_dt">
+      <td>{{dt.dtName}}</td>
+      <td>{{dt.info}}</td>
+      <td>&nbsp;</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>
+    <현재 태스크에 신청된 데이터 타입>
+  </h2>
+  <table>
+    <th>데이터 타입 명</th>
+    <th>스키마 정보</th>
+    <th>자료형 정보</th>
+    <th>나의 신청</th>
+    {% for dt in applied_dt%}
+    <tr class="applied_dt">
+      <td>{{dt.dtName}}</td>
+      <td>{{dt.info}}</td>
+      <td>{{dt.type}}</td>
+      <td>
+        {% if dt.submitter == user%}
+        <form method="POST" action="{% url 'submitter:datatypeCancel' taskid=taskid%}" class="processing-form">
+          {%csrf_token%}
+          <input type="hidden" name="form_type" value="show">
+          <input type="hidden" name="applynum" value={{dt.applynum}}>
+          <button type="submit" class="cancel">신청 취소</button>
+        </form>
+        {% else %}
+        -
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>
+    <신청란>
+  </h2>
+  <form method="POST" class="post-form">
+    {%csrf_token%}
+    {{form.as_p}}
+    <div class="button">
+      <button type="submit" class="apply">신청</button>
+    </div>
+    <p>
+      <span class="star">*</span> 표시는 필수 입력 사항입니다.
+    </p>
+  </form>
+</body>
+
+<style>
+  h1 {
+    display: inline;
+  }
+
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid black;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 15px;
+  }
+
+  .star {
+    color: red;
+  }
+
+  .post-form {
+    border: 1px solid black;
+    width: 50%;
+    text-align: center;
+  }
+
+  input:placeholder {
+    color: lightgrey;
+  }
+
+  label {
+    display: inline-block;
+    width: 15%;
+    text-align: right;
+  }
+
+  label::after {
+    content: "*";
+    color: red;
+  }
+
+  input {
+    width: 70%;
+  }
+
+  #possible-types {
+    text-align: center;
+    border: 1px dotted black;
+    width: 30%;
+  }
+
+  div {
+    margin: 10px;
+  }
+</style>
+
+</html>

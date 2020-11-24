@@ -19,5 +19,9 @@ from .import views
 app_name = 'submitter'
 urlpatterns = [
     path('submitMain/', views.submitMain, name = 'submitMain'),
+    path('wrong-access/', views.wrongAccess, name='wrongAccess'),
     path('task/<int:taskid>/apply/', views.taskApply, name='taskApply'),
+    path('task/<int:taskid>/cancel/', views.taskCancel, name='taskCancel'),
+    path('task/<int:taskid>/dt-apply/', views.datatypeApply, name='datatypeApply'),
+    path('task/<int:taskid>/dt-cancel/', views.datatypeCancel, name='datatypeCancel'),
 ]

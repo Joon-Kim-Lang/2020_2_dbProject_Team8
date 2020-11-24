@@ -8,67 +8,129 @@
 
 <body>
   <h1>제출자 메인화면</h1>
+  <p id="evalscore">
+    <strong><u>{{user}} 님, 안녕하세요 :)</u></strong> <br><br>
+    현재 나의 평가점수 : {{evalscore}}</p>
   <div id="task-all">
     <h2>
-      <전체 태스크 목록>
+      전체 태스크 목록
     </h2>
-    {% for task in all %}
-    <div class="task">
-      <span>{{task.TaskName}}</span>
-      <span class="taskdesc">"{{task.describe}}"</span>
-    </div>
-    {% endfor %}
+    <table>
+      <th>태스크 명</th>
+      <th>설명</th>
+      {% for task in all %}
+      <tr class="task">
+        <td>{{task.TaskName}}</td>
+        <td class="taskdesc">"{{task.describe}}"</td>
+      </tr>
+      {% endfor %}
+    </table>
   </div>
 
   <div id="parTasks">
     <h2>
-      <참여 중인 태스크 목록> 현재 나의 평가점수 : {{evalscore}}
+      참여 중인 태스크 목록
     </h2>
-    {% for task in accepted %}
-    <div class="task">
-      <span>{{task.TaskName}}</span>
-      <a href="">제출하기</a>
-      <a href="">제출현황</a>
-    </div>
-    {% endfor %}
+    <table>
+      <th>태스크 명</th>
+      <th>제출하기</th>
+      <th>제출현황</th>
+      {% for task in accepted %}
+      <tr class="task">
+        <td>{{task.TaskName}}</td>
+        <td><a href="">SUBMIT</a></td>
+        <td><a href="">CHECK</a></td>
+      </tr>
+      {% endfor %}
+    </table>
   </div>
 
   <div id="notparTasks">
     <h2>
-      <미참여 중인 태스크 목록>
+      미참여 중인 태스크 목록
     </h2>
     <div id="waiting">
       <h3>
-        <승인 대기중인 태스크 목록>
+        승인 대기중인 태스크 목록
       </h3>
-      {% for task in waiting %}
-      <div class="task">
-        <span>{{task.TaskName}}</span>
-      </div>
-      {% endfor %}
+      <table>
+        <th>태스크 명</th>
+        <th>신청 취소</th>
+        {% for task in waiting %}
+        <tr class="task">
+          <td>{{task.TaskName}}</td>
+          <td><a href="{% url 'submitter:taskCancel' taskid=task.TaskID %}">CANCEL</a></td>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
     <div id="notAccepted">
       <h3>
-        <승인받지 못한 태스크 목록>
+        승인받지 못한 태스크 목록
       </h3>
-      {% for task in not_accepted %}
-      <div class="task">
-        <span>{{task.TaskName}}</span>
-      </div>
-      {% endfor %}
+      <table>
+        <th>태스크 명</th>
+        {% for task in not_accepted %}
+        <tr class="task">
+          <td>{{task.TaskName}}</td>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
     <div id="notApplied">
       <h3>
-        <신청하지 않은 태스크 목록>
+        신청하지 않은 태스크 목록
       </h3>
-      {% for task in not_applied %}
-      <div class="task">
-        <span>{{task.TaskName}}</span>
-        <a href="{% url 'submitter:taskApply' taskid=task.TaskID %}">참여신청</a>
-      </div>
-      {% endfor %}
+      <table>
+        <th>태스크 명</th>
+        <th>신청하기</th>
+        {% for task in not_applied %}
+        <tr class="task">
+          <td>{{task.TaskName}}</td>
+          <td><a href="{% url 'submitter:taskApply' taskid=task.TaskID %}">APPLY</a></td>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 </body>
+
+<style>
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid black;
+  }
+
+  th {
+    font-size: 20px;
+    background-color: #2773E2;
+    color: white;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 15px;
+    width: 700px;
+  }
+
+  a {
+    font-size: 15px;
+    text-decoration: none;
+    background-color: #2773E2;
+    color: white;
+    padding: 10px;
+  }
+
+  #evalscore {
+    border: 1px dotted black;
+    padding: 30px;
+    text-align: center;
+    width: 600px;
+    margin: 30px;
+    font-size: 20px;
+  }
+</style>
 
 </html>

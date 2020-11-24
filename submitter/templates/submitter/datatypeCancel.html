@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-Type" content="text/html" charset="utf-8">
+  <title>원본 데이터 타입 신청 취소</title>
+</head>
+
+<body>
+  <h1>원본 데이터 타입 신청 취소</h1>
+  <div>
+    <p> 정말로 취소하시겠습니까?</p>
+    <form method="POST">
+      {%csrf_token%}
+      <input type="hidden" name="form_type" value="delete">
+      <input type="hidden" name="applynum" value="{{ applynum }}">
+      <button type="submit">네</button>
+      <a href="{% url 'submitter:datatypeApply' taskid=taskid%}">아니오</a>
+    </form>
+  </div>
+</body>
+
+<style>
+  a {
+    font-size: 15px;
+    text-decoration: none;
+    background-color: #2773E2;
+    color: white;
+    padding: 10px;
+  }
+</style>
+
+</html>
