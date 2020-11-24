@@ -24,4 +24,5 @@ urlpatterns = [
     path('task/<int:taskid>/cancel/', views.taskCancel, name='taskCancel'),
     path('task/<int:taskid>/dt-apply/', views.datatypeApply, name='datatypeApply'),
     path('task/<int:taskid>/dt-cancel/', views.datatypeCancel, name='datatypeCancel'),
+    path('task/<int:taskid>/submit/', views.taskSubmit, name = 'taskSubmit'),
 ]

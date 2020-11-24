@@ -179,3 +179,151 @@ def datatypeCancel(request, taskid):
             return redirect('submitter:datatypeApply', taskid = taskid)
     else:
         return redirect('submitter:wrongAccess')
+
+def taskSubmit(request,taskid):
+
+    if "GET" == request.method:
+        #(수정)태스크Id 받아와야
+        taskId = 1
+        context = []
+
+        try:
+            cursor = connection.cursor()
+            strSql = '''SELECT NAME, SCHEMAINFO, SERIALNUM
+                             FROM ORIGINALDATATYPE, TASK
+                             WHERE ID = '%d'
+                             ORDER BY SERIALNUM ASC'''%(taskId)
+
+            result = cursor.execute(strSql)
+            originalDataType = cursor.fetchall()
+
+            connection.commit()
+            connection.close()
+
+            for data in originalDataType:
+                row = {'NAME': data[0], 'SCHEMA': data[1], 'SERIALNUM' : data[2]}
+                context.append(row)
+        except:
+                connection.rollback()
+
+        return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid})
+    # if not GET, then proceed
+    try:
+        #(수정)어디선가 로그인정보 얻어와야함
+        user = 'test'
+
+        csv_file = request.FILES["csv_file"]
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request,'File is not CSV type')
+            return HttpResponseRedirect(reverse("submitter:Submitting"))
+        #if file is too large, return
+        if csv_file.multiple_chunks():
+            messages.error(request,"Uploaded file is too big (%.2f MB)." % (csv_file.size/(1000*1000),))
+            return HttpResponseRedirect(reverse("submitter:Submitting"))
+
+        file_data = csv_file.read().decode("utf-8")
+
+        lines = file_data.split("\n")
+        csv_list = []
+        for i in range(len(lines)):
+            csv_list.append(lines[i].split(','))
+
+
+        #폼에서 입력정보 받아오기
+        startDate = request.POST['startDate']
+        endDate = request.POST['endDate']
+        submitNum = request.POST['submitNum']
+        schema = request.POST['originalDataType']
+        taskId = int(request.POST['taskId'])
+
+        ORIGINALSCHEMALIST = schema.split(',')
+        serialNum  = int(ORIGINALSCHEMALIST[-1])
+        ORIGINALSCHEMALIST = ORIGINALSCHEMALIST[:len(ORIGINALSCHEMALIST)-1]
+
+        #매핑시작
+        cursor = connection.cursor()
+        strSql = '''SELECT TDTSCHEMA
+                         FROM TASKDATATABLE
+                         WHERE TASKID = '%d'
+                         '''%(taskId)
+
+        result = cursor.execute(strSql)
+        TDTSCHEMA = cursor.fetchall()
+
+        connection.commit()
+        connection.close()
+
+        TDTSCHEMAORDER = []
+        for data in TDTSCHEMA:
+            row = {'COLUMN': data[0]}
+            TDTSCHEMAORDER.append(row)
+        #(아래)TDT스키마 정보가 담긴 변수
+        TDTSCHEMAORDER[0]['COLUMN']
+        TDTSCHEMALIST = TDTSCHEMAORDER[0]['COLUMN'].split(',')
+
+        mappingDict = {}
+        mapNum = 0
+
+
+        for i in range(len(TDTSCHEMALIST)):
+            mapNum = ORIGINALSCHEMALIST.index(TDTSCHEMALIST[i])
+            mappingDict[i] = mapNum
+
+        #파싱데이터 테이블 생성
+        CreatedTableAddress = 'parsed_'+user+'_'+str(taskId)+'_'+submitNum
+        CreatedTableQuery = 'CREATE TABLE ' +CreatedTableAddress +'('
+        for i in range(len(TDTSCHEMALIST)):
+            CreatedTableQuery = CreatedTableQuery + str(TDTSCHEMALIST[i])+' VARCHAR(100)'
+            if i == len(TDTSCHEMALIST) -1:
+                CreatedTableQuery = CreatedTableQuery+') ENGINE = INNODB;'
+            else:
+                CreatedTableQuery = CreatedTableQuery+','
+
+        cursor = connection.cursor()
+        strSql = CreatedTableQuery
+        result = cursor.execute(strSql)
+        connection.commit()
+        connection.close()
+        #PARSEDINFO 테이블에 데이터 추가 후 parsedid 얻어오기
+        cursor = connection.cursor()
+        strsql ='''insert into PARSEDINFO(FILEADDR)  values('%s');'''%(CreatedTableAddress)
+        result = cursor.execute(strsql)
+        strsql = '''select ID
+                        from PARSEDINFO
+                        where FILEADDR = '%s' '''%(CreatedTableAddress)
+        result = cursor.execute(strsql)
+        parsedId = cursor.fetchall()
+        connection.commit()
+        connection.close()
+        parsedId = int(parsedId[0][0])
+
+        #파싱데이터 테이블에 파일 저장
+
+        cursor = connection.cursor()
+        for i in range(1,len(csv_list)):
+            if(len(csv_list[i]) < len(TDTSCHEMALIST)):
+                break;
+            values = ''
+            for j in range(len(TDTSCHEMALIST)):
+                if(j !=len(TDTSCHEMALIST)-1):
+                    values = values + '\"' + csv_list[i][mappingDict[j]] + '\"'+','
+                else:
+                    values = values + '\"' + csv_list[i][mappingDict[j]][:-1] + '\"'
+
+            strsql = '''insert into %s values(%s);'''%(CreatedTableAddress, values)
+            result = cursor.execute(strsql)
+            connection.commit()
+        connection.close()
+
+        #originalinfo 튜플추가
+        cursor = connection.cursor()
+        strsql = '''insert into ORIGINALINFO(NTH,STARTDATE,ENDDATE,TYPENUM,MEMID,PARSEDID) values('%d','%s','%s','%d','%s','%d');'''%(int(submitNum),startDate,endDate,serialNum,user,parsedId)
+        result = cursor.execute(strsql)
+        connection.commit()
+        connection.close()
+
+    except Exception as e:
+        logging.getLogger("error_logger").error("Unable to upload file. "+repr(e))
+        messages.error(request,"Unable to upload file. "+repr(e))
+
+    return HttpResponseRedirect(reverse("submitter:Submitting"))

@@ -8,6 +8,7 @@
 
 <body>
   <div>
+    <h1>태스크 신청 취소 확인</h1>
     <p> 정말로 태스크 신청을 취소하시겠습니까?</p>
     <form method="POST">
       {%csrf_token%}
@@ -18,14 +19,34 @@
 </body>
 
 <style>
+  h1 {
+    font-weight: bold;
+    color: #2773E2;
+    text-align: center;
+  }
+
+  div {
+    width: 50%;
+    text-align: center;
+    border: 1px dotted black;
+    margin: 100px auto;
+    padding: 100px 0;
+  }
+
+  p {
+    font-size: 20px;
+    margin-bottom: 30px;
+  }
+
   a,
   button {
-    border: 0;
     font-size: 15px;
     text-decoration: none;
     background-color: #2773E2;
     color: white;
     padding: 10px;
+    border: 0;
+    width: 60px;
   }
 </style>
 
