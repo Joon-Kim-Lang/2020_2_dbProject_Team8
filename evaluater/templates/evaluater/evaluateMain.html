@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>평가자 메인화면</title>
+</head>
+<body>
+    <h1>평가자 메인화면</h1>
+    <div id="not_eval">
+        <h2>< 평가해야할 태스크 목록 ></h2>
+        {% if not_eval %}
+
+        <div class = "task_not_eval">
+            {% for task in not_eval %}
+            <form action="{% url 'evaluater:evaluating' %}" method="post"}>
+                {%  csrf_token %}
+
+                <a href="#none">{{ task.FILEADDR }}</a></br>
+                점수주기 <input type="number" min="0" max="10" value="5" step="1"  name="quality"></br>
+                <input type = "hidden" name="ID" value="{{ task.ID }}">
+            <input type="submit" name="PNP" value="P"><input type="submit" name="PNP" value="NP">
+            </form>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div>평가해야할 태스크 없음</div>
+        {% endif %}
+
+    </div>
+    <div id="eval">
+        <h2>< 평가한 태스크 목록 ></h2>
+        {% if eval %}
+
+        <div class = "task_eval">
+            {% for task in eval %}
+                <a href="#none">{{ task.FILEADDR }}</a> : {{ task.QUALITY }}점, {{ task.PNP}} </br>
+
+            {% endfor %}
+        </div>
+        {% else %}
+        <div>평가해야할 태스크 없음</div>
+        {% endif %}
+
+    </div>
+</body>
+</html>
