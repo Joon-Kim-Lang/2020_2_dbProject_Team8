@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect
 from django.db import connection
 from django.http import HttpResponseRedirect
 from .forms import originalDTForm
+from django.urls import reverse
+import logging
+from django.contrib import messages
+import os
+import random
 
 # 제출자로 로그인했을 경우 초기 페이지로 보내주는 view
 # 로그인한 사용자 정보 얻어오기
@@ -15,7 +20,7 @@ def submitMain(request):
 
     #    user = User.objects.get(user = request.user)
 
-    try:        
+    try:
         cursor = connection.cursor()
         # get eval score
         strSql = "SELECT EVALSCORE FROM MEMBER WHERE MEMBER.ID = '%s'"%(user)
@@ -73,12 +78,12 @@ def submitMain(request):
             tasklist.append(row)
 
         evalscore=evalscore[0][0]
-            
+
     except:
         connection.rollback()
         print("Failed to get Data")
 
-    return render(request, 'submitter/submitMain.html', 
+    return render(request, 'submitter/submitMain.html',
     {'evalscore':evalscore, 'all':tasklist, 'accepted':accepted, 'not_accepted':not_accepted, 'waiting':waiting, 'not_applied':not_applied, 'user':user})
 
 def wrongAccess(request):
@@ -93,12 +98,12 @@ def taskApply(request, taskid):
         cursor.close()
         connection.close()
         return redirect("submitter:submitMain")
-    
+
     else:
         cursor = connection.cursor()
         sql = "SELECT TASKNAME from TASK where ID = {}".format(taskid)
         result=cursor.execute(sql)
-        result=cursor.fetchall()[0][0]      
+        result=cursor.fetchall()[0][0]
         connection.commit()
         connection.close()
         return render(request, 'submitter/taskApply.html', {'taskname':result, 'user':user, 'taskid':taskid})
@@ -157,7 +162,7 @@ def datatypeApply(request, taskid):
             cursor.close()
             connection.close()
             return redirect('submitter:datatypeApply', taskid = taskid)
-    
+
     else:
         form = originalDTForm()
         all_dt, applied_dt = get_info()
@@ -184,15 +189,14 @@ def taskSubmit(request,taskid):
 
     if "GET" == request.method:
         #(수정)태스크Id 받아와야
-        taskId = 1
         context = []
 
         try:
             cursor = connection.cursor()
-            strSql = '''SELECT NAME, SCHEMAINFO, SERIALNUM
+            strSql = '''SELECT NAME, SCHEMAINFO, SERIALNUM, SCHEMATYPE
                              FROM ORIGINALDATATYPE, TASK
                              WHERE ID = '%d'
-                             ORDER BY SERIALNUM ASC'''%(taskId)
+                             ORDER BY SERIALNUM ASC'''%(taskid)
 
             result = cursor.execute(strSql)
             originalDataType = cursor.fetchall()
@@ -201,7 +205,7 @@ def taskSubmit(request,taskid):
             connection.close()
 
             for data in originalDataType:
-                row = {'NAME': data[0], 'SCHEMA': data[1], 'SERIALNUM' : data[2]}
+                row = {'NAME': data[0], 'SCHEMA': data[1], 'SERIALNUM' : data[2], 'TYPE': data[3]}
                 context.append(row)
         except:
                 connection.rollback()
@@ -273,7 +277,7 @@ def taskSubmit(request,taskid):
         CreatedTableAddress = 'parsed_'+user+'_'+str(taskId)+'_'+submitNum
         CreatedTableQuery = 'CREATE TABLE ' +CreatedTableAddress +'('
         for i in range(len(TDTSCHEMALIST)):
-            CreatedTableQuery = CreatedTableQuery + str(TDTSCHEMALIST[i])+' VARCHAR(100)'
+            CreatedTableQuery = CreatedTableQuery + str(TDTSCHEMALIST[i])+' VARCHAR(300)'
             if i == len(TDTSCHEMALIST) -1:
                 CreatedTableQuery = CreatedTableQuery+') ENGINE = INNODB;'
             else:
@@ -321,9 +325,86 @@ def taskSubmit(request,taskid):
         result = cursor.execute(strsql)
         connection.commit()
         connection.close()
+        #정량평가 요소 넣기
+        quantityCheck(CreatedTableAddress,parsedId)
+
+        #평가자 랜덤배정
+        evalDesignate(parsedId)
+
 
     except Exception as e:
         logging.getLogger("error_logger").error("Unable to upload file. "+repr(e))
         messages.error(request,"Unable to upload file. "+repr(e))
 
-    return HttpResponseRedirect(reverse("submitter:Submitting"))
+    return HttpResponseRedirect(reverse("submitter:submitMain"))
+
+
+def quantityCheck(tableName, ID):
+
+        try:
+            cursor = connection.cursor()
+            strSql = "SELECT * FROM %s"%(tableName)
+            result = cursor.execute(strSql)
+            paresedTable = cursor.fetchall()
+
+            connection.commit()
+            connection.close()
+
+            total_tup = len(paresedTable)
+            #중복 튜플 수 검사
+            tempSet = set(paresedTable)
+            dupli_tup = total_tup - len(tempSet)
+
+
+            #null 개수 검사
+            null_num = 0
+            for i in range(total_tup):
+                for j in range(len(paresedTable[0])):
+                    if paresedTable[i][j] in ('\r','\n',''):
+                        null_num +=1;
+
+            total_ele = total_tup * len(paresedTable[0])
+
+            null_ratio = round(null_num / total_ele, 5)
+
+            #정성평가 지표 집어넣기
+            cursor = connection.cursor()
+            strsql = "UPDATE PARSEDINFO SET TOTALTUPLE='%d', DUPLICATETUPLE='%d', NULLRATIO='%f' where ID = '%d';"%(total_tup,dupli_tup,null_ratio,ID)
+            result = cursor.execute(strsql)
+            connection.commit()
+            connection.close()
+        except:
+            connection.rollback()
+            print("Failed to get Data")
+
+        return
+
+def evalDesignate(ID):
+    try:
+        cursor = connection.cursor()
+        strsql = '''select ID
+                        from MEMBER
+                        where ROLE = 'E' '''
+        result = cursor.execute(strsql)
+        evaluators = cursor.fetchall()
+        connection.commit()
+        connection.close()
+
+        eval_count = len(evaluators)
+        random_num = random.randint(0,eval_count-1)
+
+        random_evalid = evaluators[random_num][0]
+
+        cursor = connection.cursor()
+        strsql = "UPDATE PARSEDINFO SET EVALID='%s' where ID = '%d';"%(random_evalid,ID)
+        result = cursor.execute(strsql)
+        connection.commit()
+        connection.close()
+
+
+    except:
+        connection.rollback()
+        print("Failed to get Data")
+
+
+    return
