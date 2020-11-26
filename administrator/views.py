@@ -33,7 +33,7 @@ def register(request):
         birth = request.data['birth']
         role = request.data['role']
     except:
-        return Response({'state': 'fail', 'code': 'RequestError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
     # DB connection
     cursor = connection.cursor()
@@ -46,7 +46,7 @@ def register(request):
     # response error msg with fail sign (DuplicateIDError)
     if (response[0][0] == 1):
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DuplicateIDError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'DuplicateIDError'})
 
     # INSERT new account info into DB
     try:
@@ -58,7 +58,7 @@ def register(request):
         response = cursor.fetchall()
     except Exception as e:
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DBQueryError', 'errormsg': str(e)})
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
 
     # connection close
     connection.commit()
@@ -91,7 +91,7 @@ def createTask(request):
         tdtname = request.data['tdtname']
         tdtschema = request.data['tdtschema']
     except:
-        return Response({'state': 'fail', 'code': 'RequestError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
     # DB connection
     cursor = connection.cursor()
@@ -104,7 +104,7 @@ def createTask(request):
     # response error msg with fail sign (DuplicateTaskNameError)
     if (response[0][0] == 1):
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DuplicateTaskNameError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'DuplicateTaskNameError'})
 
     # check duplicate TDT name
     query = "SELECT COUNT(*) FROM TASKDATATABLE WHERE TDTNAME = '%s'"%(tdtname)
@@ -114,7 +114,7 @@ def createTask(request):
     # response error msg with fail sign (DuplicateTDTNameError)
     if (response[0][0] == 1):
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DuplicateTaskNameError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'DuplicateTaskNameError'})
 
     # INSERT new task info into DB
     try:
@@ -126,7 +126,7 @@ def createTask(request):
         response = cursor.fetchall()
     except Exception as e:
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DBQueryError', 'errormsg': str(e)})
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
 
     # INSERT new task data table info into DB
     query = " SELECT ID FROM TASK WHERE TASKNAME = '%s'"%(name)
@@ -143,7 +143,7 @@ def createTask(request):
         response = cursor.fetchall()
     except Exception as e:
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DBQueryError', 'errormsg': str(e)})
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
 
     # CREATE new task data table
     try:
@@ -152,7 +152,61 @@ def createTask(request):
         response = cursor.fetchall()
     except Exception as e:
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'DBQueryError', 'errormsg': str(e)})
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success'})
+
+# ACCOUNT login IN CHECK
+@api_view(['POST'])
+def login(request):
+    """
+    User login
+    
+    - Parameter
+    ID, password
+
+    - Error List
+    RequestError            : invalid request data
+    NoMatchedIDError        : no matched id exists in DB
+    InvalidPasswordError    : password is not correst
+    DBQueryError            : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+        password = request.data['password']
+    except:
+        return Response({'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+    
+    # check if ID exists
+    query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # response error msg with fail sign (NoMatchedIDError)
+    if (response[0][0] == 0):
+        connection.rollback()
+        return Response({'state': 'fail', 'code': 'NoMatchedIDError'})
+
+    # check if password valid
+    query = "SELECT PASSWORD FROM MEMBER WHERE ID = '%s'"%(userid)
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # response error msg with fail sign (InvalidPasswordError)
+    print(response[0][0])
+    if (response[0][0] != password):
+        connection.rollback()
+        return Response(status=401, data={'state': 'fail', 'code': 'InvalidPasswordError'})
 
     # connection close
     connection.commit()
