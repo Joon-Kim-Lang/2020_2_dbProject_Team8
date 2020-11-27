@@ -5,7 +5,7 @@ from .forms import originalDTForm
 
 # 제출자로 로그인했을 경우 초기 페이지로 보내주는 view
 # 로그인한 사용자 정보 얻어오기
-user = 'test'
+user = 'khjoh'
 
 def submitMain(request):
 

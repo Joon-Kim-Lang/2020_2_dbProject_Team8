@@ -24,6 +24,11 @@
     <th>데이터 수집 기간</th>
     <th>tuple수<br>(중복 제외)</th>
     <th>PASS 여부</th>
+    {% if submit_result|length == 0%}
+    <tr>
+      <td colspan=5>해당 내역이 없습니다.</td>
+    </tr>
+    {% endif %}
     {% for submit in submit_result %}
     <tr class="submit">
       <td>{{submit.dt_name}}</td>

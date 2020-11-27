@@ -18,6 +18,11 @@
     <table>
       <th>태스크 명</th>
       <th>설명</th>
+      {% if all|length == 0%}
+      <tr>
+        <td colspan=2>해당 내역이 없습니다.</td>
+      </tr>
+      {% endif %}
       {% for task in all %}
       <tr class="task">
         <td>{{task.TaskName}}</td>
@@ -35,6 +40,11 @@
       <th>태스크 명</th>
       <th>제출하기</th>
       <th>제출현황</th>
+      {% if accepted|length == 0%}
+      <tr>
+        <td colspan=3>해당 내역이 없습니다.</td>
+      </tr>
+      {% endif %}
       {% for task in accepted %}
       <tr class="task">
         <td>{{task.TaskName}}</td>
@@ -56,6 +66,11 @@
       <table>
         <th>태스크 명</th>
         <th>신청 취소</th>
+        {% if waiting|length == 0%}
+        <tr>
+          <td colspan=2>해당 내역이 없습니다.</td>
+        </tr>
+        {% endif %}
         {% for task in waiting %}
         <tr class="task">
           <td>{{task.TaskName}}</td>
@@ -70,6 +85,11 @@
       </h3>
       <table>
         <th>태스크 명</th>
+        {% if not_accepted|length == 0%}
+        <tr>
+          <td>해당 내역이 없습니다.</td>
+        </tr>
+        {% endif %}
         {% for task in not_accepted %}
         <tr class="task">
           <td>{{task.TaskName}}</td>
@@ -84,6 +104,11 @@
       <table>
         <th>태스크 명</th>
         <th>신청하기</th>
+        {% if not_applied|length == 0%}
+        <tr>
+          <td colspan=2>해당 내역이 없습니다.</td>
+        </tr>
+        {% endif %}
         {% for task in not_applied %}
         <tr class="task">
           <td>{{task.TaskName}}</td>
