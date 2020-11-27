@@ -39,7 +39,7 @@
       <tr class="task">
         <td>{{task.TaskName}}</td>
         <td><a href="{% url 'submitter:taskSubmit' taskid=task.TaskID %}">SUBMIT</a></td>
-        <td><a href="">CHECK</a></td>
+        <td><a href="{% url 'submitter:taskCheck' taskid=task.TaskID %}">CHECK</a></td>
       </tr>
       {% endfor %}
     </table>
