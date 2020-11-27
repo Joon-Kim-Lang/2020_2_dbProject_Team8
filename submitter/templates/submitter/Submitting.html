@@ -4,7 +4,7 @@
 {% csrf_token %}
 <input type="hidden" name="taskId" value="{{taskId}}"></input>
 <div class="form-group" style = "padding: 5px 1px 2px 3px;">
-    submitNum : <input type='number' name="submitNum"  min="1" step="1"></br>
+    submitNum : <input type='number' name="submitNum" value = '{{curSubmission}}'readonly></br>
     startDate : <input type='text' name="startDate"></br>
     endDate : <input type='text' name="endDate"></br>
 </div>

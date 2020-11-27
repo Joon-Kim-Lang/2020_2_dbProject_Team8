@@ -186,9 +186,9 @@ def datatypeCancel(request, taskid):
         return redirect('submitter:wrongAccess')
 
 def taskSubmit(request,taskid):
-
+    user = 'test'
     if "GET" == request.method:
-        #(수정)태스크Id 받아와야
+
         context = []
 
         try:
@@ -207,14 +207,28 @@ def taskSubmit(request,taskid):
             for data in originalDataType:
                 row = {'NAME': data[0], 'SCHEMA': data[1], 'SERIALNUM' : data[2], 'TYPE': data[3]}
                 context.append(row)
+
+
+            cursor = connection.cursor()
+            strSql = '''SELECT TOTALSUBMISSION
+                             FROM APPLY
+                             WHERE TASKID = '%d' AND MEMID = '%s'
+                             '''%(taskid, user)
+
+            result = cursor.execute(strSql)
+            totalSubmission = cursor.fetchall()
+
+            connection.commit()
+            connection.close()
+            curSubmission = int(totalSubmission[0][0]) + 1
+
         except:
                 connection.rollback()
 
-        return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid})
+        return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid,'curSubmission':curSubmission})
     # if not GET, then proceed
     try:
         #(수정)어디선가 로그인정보 얻어와야함
-        user = 'test'
 
         csv_file = request.FILES["csv_file"]
         if not csv_file.name.endswith('.csv'):
@@ -243,6 +257,7 @@ def taskSubmit(request,taskid):
         ORIGINALSCHEMALIST = schema.split(',')
         serialNum  = int(ORIGINALSCHEMALIST[-1])
         ORIGINALSCHEMALIST = ORIGINALSCHEMALIST[:len(ORIGINALSCHEMALIST)-1]
+        #APPLY테이블에서 totaltuple 추가해주기 위한 정보 받아오기
 
         #매핑시작
         cursor = connection.cursor()
@@ -330,6 +345,13 @@ def taskSubmit(request,taskid):
 
         #평가자 랜덤배정
         evalDesignate(parsedId)
+
+        #APPLY totalsubmission 반영
+        cursor = connection.cursor()
+        strsql = "UPDATE APPLY SET TOTALSUBMISSION ='%d' where MEMID = '%s' and TASKID = '%d' ;"%(int(submitNum),user,taskId)
+        result = cursor.execute(strsql)
+        connection.commit()
+        connection.close()
 
 
     except Exception as e:
