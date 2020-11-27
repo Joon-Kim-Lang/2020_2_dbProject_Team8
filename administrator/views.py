@@ -182,7 +182,7 @@ def login(request):
         userid = request.data['userid']
         password = request.data['password']
     except:
-        return Response({'state': 'fail', 'code': 'RequestError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
     # DB connection
     cursor = connection.cursor()
@@ -195,7 +195,7 @@ def login(request):
     # response error msg with fail sign (NoMatchedIDError)
     if (response[0][0] == 0):
         connection.rollback()
-        return Response({'state': 'fail', 'code': 'NoMatchedIDError'})
+        return Response(status=400, data={'state': 'fail', 'code': 'NoMatchedIDError'})
 
     # check if password valid
     query = "SELECT PASSWORD FROM MEMBER WHERE ID = '%s'"%(userid)
@@ -203,14 +203,40 @@ def login(request):
     response = cursor.fetchall()
 
     # response error msg with fail sign (InvalidPasswordError)
-    print(response[0][0])
     if (response[0][0] != password):
         connection.rollback()
         return Response(status=401, data={'state': 'fail', 'code': 'InvalidPasswordError'})
+
+    # save at session
+    query = "SELECT ROLE FROM MEMBER WHERE ID = '%s'"%(userid)
+    cursor.execute(query)
+    response = cursor.fetchall()
+    role = response[0][0]
+
+    request.session.loginInfo = {
+        'userid': userid,
+        'role': role
+    }
 
     # connection close
     connection.commit()
     connection.close()
     
     # return success response
-    return Response({'state': 'success'})
+    return Response({'state': 'success', 'role': role})
+
+# GET CURRENT USER INFO
+@api_view(['GET'])
+def getinfo(request):
+    if request.session.get('loginInfo', False):
+        return Response({ info: request.session.loginInfo })
+    else:
+        return Response(status=401, data={'code': 'No login session'})
+
+# USER LOGGOUT
+@api_view(['POST'])
+def logout(request):
+    if request.session.get('loginInfo'):
+        del(request.session['loginInfo'])
+    
+    return Response({'status': 'success'})
