@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid black;
+  }
+
+  th {
+    font-size: 20px;
+    background-color: #2773E2;
+    color: white;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 15px;
+    width: 1000px;
+  }
+</style>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for name in FILE_NAME %}
+    <h1> {{ name }} </h1>
+    {% endfor %}
+    {% if COL_INFO %}
+    <table>
+        {% for col_name in COL_INFO %}
+            <th>{{ col_name }}</th>
+        {% endfor %}
+        {% for data in PAR_INFO %}
+            <tr>
+                {% for d in data %}
+                    <td> {{ d }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor%}
+
+
+    </table>
+{% endif %}
+</body>
+</html>
