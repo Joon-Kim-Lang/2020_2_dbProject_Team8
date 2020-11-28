@@ -361,6 +361,32 @@ def taskSubmit(request,taskid):
     return HttpResponseRedirect(reverse("submitter:submitMain"))
 
 
+def taskCheck(request, taskid):
+    cursor = connection.cursor()
+    sql = "SELECT ORIGINALDATATYPE.NAME, ORIGINALINFO.NTH, ORIGINALINFO.STARTDATE, ORIGINALINFO.ENDDATE,\
+            PARSEDINFO.TOTALTUPLE-PARSEDINFO.DUPLICATETUPLE, PARSEDINFO.PNP\
+            FROM ORIGINALINFO, ORIGINALDATATYPE, PARSEDINFO\
+            WHERE ORIGINALINFO.MEMID = '{}' and ORIGINALDATATYPE.TASKID = {} and\
+            ORIGINALINFO.TYPENUM = ORIGINALDATATYPE.SERIALNUM and\
+            ORIGINALINFO.PARSEDID = PARSEDINFO.ID ORDER BY ORIGINALINFO.TYPENUM, ORIGINALINFO.NTH;".format(user, taskid)
+    result = cursor.execute(sql)
+    submissions = cursor.fetchall()
+
+    submit_result = []
+    for submit in submissions:
+        row = {'dt_name':submit[0], 'nth':submit[1],
+                'period':"{} ~ {}".format(submit[2],submit[3]),
+                'tuple_num':submit[4],
+                'pnp':submit[5]}
+        submit_result.append(row)
+
+    sql = "SELECT project.APPLY.TOTALSUBMISSION, project.APPLY.ACCEPTEDTUPLE FROM project.APPLY where project.APPLY.MEMID = '{}' and project.APPLY.TASKID = {};".format(user, taskid)
+    result = cursor.execute(sql)
+    total_result = cursor.fetchall()
+    total_result = {'total_submit':total_result[0][0], 'total_pass':total_result[0][1]}
+    return render(request, 'submitter/taskCheck.html', {'submit_result':submit_result, 'total_result':total_result})
+
+
 def quantityCheck(tableName, ID):
 
         try:
