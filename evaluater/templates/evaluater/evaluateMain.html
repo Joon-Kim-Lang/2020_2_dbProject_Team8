@@ -15,7 +15,7 @@
             <form action="{% url 'evaluater:evaluating' %}" method="post"}>
                 {%  csrf_token %}
 
-                <a href="#none">{{ task.FILEADDR }}</a></br>
+                <a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">{{ task.FILEADDR }}</a></br>
                 점수주기 <input type="number" min="0" max="10" value="5" step="1"  name="quality"></br>
                 <input type = "hidden" name="ID" value="{{ task.ID }}">
             <input type="submit" name="PNP" value="P"><input type="submit" name="PNP" value="NP">
@@ -33,7 +33,7 @@
 
         <div class = "task_eval">
             {% for task in eval %}
-                <a href="#none">{{ task.FILEADDR }}</a> : {{ task.QUALITY }}점, {{ task.PNP}} </br>
+                <a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">{{ task.FILEADDR }}</a> : {{ task.QUALITY }}점, {{ task.PNP}} </br>
 
             {% endfor %}
         </div>

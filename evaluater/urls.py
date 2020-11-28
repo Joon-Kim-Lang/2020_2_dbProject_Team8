@@ -20,5 +20,5 @@ app_name = 'evaluater'
 urlpatterns = [
     path('evaluateMain/', views.evaluateMain, name='evaluateMain'),
     path('evaluate/',views.evaluating,name='evaluating'),
-
+    path('evaluater/<str:addr>/fileDescription', views.evalDescription, name='evalDescription')
 ]

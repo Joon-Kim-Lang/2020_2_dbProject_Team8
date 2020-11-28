@@ -4,7 +4,7 @@
 {% csrf_token %}
 <input type="hidden" name="taskId" value="{{taskId}}"></input>
 <div class="form-group" style = "padding: 5px 1px 2px 3px;">
-    submitNum : <input type='number' name="submitNum"  min="1" step="1"></br>
+    submitNum : <input type='number' name="submitNum" value = '{{curSubmission}}'readonly></br>
     startDate : <input type='text' name="startDate"></br>
     endDate : <input type='text' name="endDate"></br>
 </div>
@@ -13,14 +13,13 @@
 
     <select name = 'originalDataType'>
     {% for item in context %}
-      <option value = '{{item.SCHEMA}},{{item.SERIALNUM}}' name = 'schema'> {{item.NAME}}/ {{item.SCHEMA}}</option>
+      <option value = '{{item.SCHEMA}},{{item.SERIALNUM}}' name = 'schema'> {{item.NAME}}/ {{item.SCHEMA}}({{item.TYPE}})</option>
     {% endfor %}
   </select>
 
-  <a href="none" class="schema_register">스키마 등록</a>
+  <a href="{% url 'submitter:datatypeApply' taskid=taskId %}" class="schema_register">스키마 등록</a>
 
 </div>
-
 
 <div class="fileUpload" style = "padding: 15px 1px 2px 3px;">
     <p>CSV 파일 업로드:</p>
