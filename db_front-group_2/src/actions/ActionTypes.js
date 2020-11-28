@@ -1,0 +1,27 @@
+/*
+    Defining Action Types for React Reducer
+*/
+
+// ===== AUTHENTICATION =====
+// Register
+export const AUTH_REGISTER = "AUTH_REGISTER";
+export const AUTH_REGISTER_SUCCESS = "AUTH_REGISTER_SUCCESS";
+export const AUTH_REGISTER_FAILURE = "AUTH_REGISTER_FAILURE";
+
+// TASK
+export const TASK_CREATE = "TASK_CREATE";
+export const TASK_CREATE_SUCCESS = "TASK_CREATE_SUCCESS";
+export const TASK_CREATE_FAILURE = "TASK_CREATE_FAILURE";
+
+// Login
+export const AUTH_LOGIN = "AUTH_LOGIN";
+export const AUTH_LOGIN_SUCCESS = "AUTH_LOGIN_SUCCESS";
+export const AUTH_LOGIN_FAILURE = "AUTH_LOGIN_FAILURE";
+
+// Session
+export const AUTH_GET_STATUS = "AUTH_GET_STATUS";
+export const AUTH_GET_STATUS_SUCCESS = "AUTH_GET_STATUS_SUCCESS";
+export const AUTH_GET_STATUS_FAILURE = "AUTH_GET_STATUS_FAILURE";
+
+// Logout
+export const AUTH_LOGOUT = "AUTH_LOGOUT";
