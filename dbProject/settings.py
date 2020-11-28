@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'submitter.apps.SubmitterConfig',
     'evaluater.apps.EvaluaterConfig',
-    # 'administrator',
+    'administrator',
     'corsheaders'
 ]
 
