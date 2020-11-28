@@ -34,20 +34,20 @@ def submitMain(request):
 
         # applied tasks
         strSql = '''SELECT TASKNAME, ACCEPTED, TASK.ID
-                        FROM MEMBER, APPLY, TASK
-                        WHERE TASK.ID = TASKID and (ACCEPTED = 'P' or ACCEPTED IS NULL or ACCEPTED = 'NP') AND MEMBER.ID = '%s'
+                        FROM APPLY, TASK
+                        WHERE APPLY.MEMID = '%s' AND TASK.ID = TASKID
                         ORDER BY TASK.ID ASC'''%(user)
         result = cursor.execute(strSql)
         parTask = cursor.fetchall()
+        print(len(parTask), user)
 
         # haven't applied
         strSql = '''SELECT T.TASKNAME, T.ID
                         FROM TASK T
                         WHERE T.TASKNAME NOT IN(
                         SELECT TASKNAME
-                                        FROM MEMBER, APPLY, TASK
-                                        WHERE TASK.ID = TASKID and (ACCEPTED = 'P' or ACCEPTED IS NULL or ACCEPTED = 'NP') AND MEMBER.ID = '%s'
-                                        ORDER BY TASK.ID ASC)
+                                        FROM APPLY, TASK
+                                        WHERE TASK.ID = TASKID and APPLY.MEMID = '%s')
                         ORDER BY ID ASC'''%(user)
         result = cursor.execute(strSql)
         nonParTask = cursor.fetchall()
@@ -374,7 +374,7 @@ def taskCheck(request, taskid):
 
     submit_result = []
     for submit in submissions:
-        row = {'dt_name':submit[0], 'nth':submit[1],
+        row = {'dt_name':submit[0], 'nth':submit[1], 
                 'period':"{} ~ {}".format(submit[2],submit[3]),
                 'tuple_num':submit[4],
                 'pnp':submit[5]}
@@ -384,6 +384,7 @@ def taskCheck(request, taskid):
     result = cursor.execute(sql)
     total_result = cursor.fetchall()
     total_result = {'total_submit':total_result[0][0], 'total_pass':total_result[0][1]}
+
     return render(request, 'submitter/taskCheck.html', {'submit_result':submit_result, 'total_result':total_result})
 
 
