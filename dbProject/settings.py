@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'submitter.apps.SubmitterConfig',
-    'evaluater.apps.EvaluaterConfig'
+    'evaluater.apps.EvaluaterConfig',
 ]
 
 MIDDLEWARE = [
