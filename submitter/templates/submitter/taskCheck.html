@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="content-Type" content="text/html" charset="utf-8">
+  <title>태스크 참여 현황 확인</title>
+</head>
+
+<body>
+  <h1>태스크 현황 확인</h1>
+  <h2>전체 결과</h2>
+  <table>
+    <th>제출 파일 수</th>
+    <th>PASS 된 tuple 수</th>
+    <tr>
+      <td>{{total_result.total_submit}}</td>
+      <td>{{total_result.total_pass}}</td>
+    </tr>
+  </table>
+  <h2>원본 데이터 타입 별 확인</h2>
+  <table id="type_check">
+    <th>원본 데이터 타입 명</th>
+    <th>회차</th>
+    <th>데이터 수집 기간</th>
+    <th>tuple수<br>(중복 제외)</th>
+    <th>PASS 여부</th>
+    {% if submit_result|length == 0%}
+    <tr>
+      <td colspan=5>해당 내역이 없습니다.</td>
+    </tr>
+    {% endif %}
+    {% for submit in submit_result %}
+    <tr class="submit">
+      <td>{{submit.dt_name}}</td>
+      <td>{{submit.nth}}</td>
+      <td>{{submit.period}}</td>
+      <td>{{submit.tuple_num}}</td>
+      {% if submit.pnp == null %}
+      <td>평가 전</td>
+      {% else %}
+      <td>{{submit.pnp}}</td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+
+<style>
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid black;
+  }
+
+  th {
+    font-size: 20px;
+    background-color: #2773E2;
+    color: white;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 15px;
+    width: 1000px;
+  }
+</style>
+
+<script>
+  const table = document.querySelector('table#type_check');
+
+  let headerCell = null;
+
+  //merge cell with the same type
+  for (let row of table.rows) {
+    const firstCell = row.cells[0];
+    if (headerCell === null || firstCell.innerText !== headerCell.innerText) {
+      headerCell = firstCell;
+    } else {
+      headerCell.rowSpan++;
+      firstCell.remove();
+    }
+  }
+</script>
+
+</html>
