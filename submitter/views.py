@@ -454,5 +454,4 @@ def evalDesignate(ID):
         connection.rollback()
         print("Failed to get Data")
 
-
     return
