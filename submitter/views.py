@@ -39,7 +39,6 @@ def submitMain(request):
                         ORDER BY TASK.ID ASC'''%(user)
         result = cursor.execute(strSql)
         parTask = cursor.fetchall()
-        print(len(parTask), user)
 
         # haven't applied
         strSql = '''SELECT T.TASKNAME, T.ID

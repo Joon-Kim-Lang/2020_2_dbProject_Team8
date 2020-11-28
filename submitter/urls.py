@@ -18,7 +18,7 @@ from .import views
 
 app_name = 'submitter'
 urlpatterns = [
-    path('submitMain/', views.submitMain, name = 'submitMain'),
+    path(r'?id=^(?P<user>[\w.@+-]+)/$/submitMain/', views.submitMain, name = 'submitMain'),
     path('wrong-access/', views.wrongAccess, name='wrongAccess'),
     path('task/<int:taskid>/apply/', views.taskApply, name='taskApply'),
     path('task/<int:taskid>/cancel/', views.taskCancel, name='taskCancel'),

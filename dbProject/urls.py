@@ -15,9 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from administrator import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('submitter/', include('submitter.urls')),
+    path('submitter', include('submitter.urls')),
     path('evaluater/',include('evaluater.urls')),
+    path('admin/', admin.site.urls),
+    # ==========================
+    # ADMINISTRATOR URL PATTERNS
+    # ==========================
+    # Register
+    path('api/register/', views.register),
+    path('api/task/create/', views.createTask),
+    path('api/login/', views.login),
+    path('api/getinfo', views.getinfo),
+    path('api/logout/', views.logout)
 ]
