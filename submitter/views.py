@@ -8,17 +8,28 @@ from django.contrib import messages
 import os
 import random
 
+def sessionRecord(request):
+    user = request.GET['id']
+    request.session['user'] = user
+
+    return redirect("submitter:submitMain")
+
+def logout(request):
+    request.session.pop('user')
+    request.session.flush()
+
+
+    return redirect("submitter:submitMain")
+
 # 제출자로 로그인했을 경우 초기 페이지로 보내주는 view
 # 로그인한 사용자 정보 얻어오기
-user = 'khjoh'
 
 def submitMain(request):
 
-    #cur_user = request.User
-
-    #if cur_user.is_authenticated:
-
-    #    user = User.objects.get(user = request.user)
+    #로그인 세션정보 확인 부분
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
 
     try:
         cursor = connection.cursor()
@@ -89,6 +100,10 @@ def wrongAccess(request):
     return render(request, 'submitter/wrongAccess.html')
 
 def taskApply(request, taskid):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     if request.method == "POST":
         cursor = connection.cursor()
         sql = "INSERT INTO APPLY(MEMID, TASKID) VALUES('{}',{})".format(user, taskid)
@@ -108,6 +123,10 @@ def taskApply(request, taskid):
         return render(request, 'submitter/taskApply.html', {'taskname':result, 'user':user, 'taskid':taskid})
 
 def taskCancel(request, taskid):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     if request.method == "POST":
         cursor = connection.cursor()
         sql = "DELETE FROM APPLY WHERE MEMID = '{}' and TASKID = {}".format(user, taskid)
@@ -120,6 +139,10 @@ def taskCancel(request, taskid):
         return render(request, 'submitter/taskCancel.html')
 
 def datatypeApply(request, taskid):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     def get_info():
         cursor=connection.cursor()
 
@@ -169,6 +192,11 @@ def datatypeApply(request, taskid):
     return render(request, 'submitter/datatypeApply.html', {'form':form, 'all_dt':all_dt, 'applied_dt':applied_dt, 'user':user, 'taskid':taskid})
 
 def datatypeCancel(request, taskid):
+
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     if request.method == "POST":
         applynum = request.POST['applynum']
         if request.POST['form_type'] == "show": # just show the cancel screen
@@ -185,7 +213,11 @@ def datatypeCancel(request, taskid):
         return redirect('submitter:wrongAccess')
 
 def taskSubmit(request,taskid):
-    user = 'test'
+
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     if "GET" == request.method:
 
         context = []
@@ -200,15 +232,12 @@ def taskSubmit(request,taskid):
             result = cursor.execute(strSql)
             originalDataType = cursor.fetchall()
 
-            connection.commit()
-            connection.close()
 
             for data in originalDataType:
                 row = {'NAME': data[0], 'SCHEMA': data[1], 'SERIALNUM' : data[2], 'TYPE': data[3]}
                 context.append(row)
 
 
-            cursor = connection.cursor()
             strSql = '''SELECT TOTALSUBMISSION
                              FROM APPLY
                              WHERE TASKID = '%d' AND MEMID = '%s'
@@ -227,7 +256,6 @@ def taskSubmit(request,taskid):
         return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid,'curSubmission':curSubmission})
     # if not GET, then proceed
     try:
-        #(수정)어디선가 로그인정보 얻어와야함
 
         csv_file = request.FILES["csv_file"]
         if not csv_file.name.endswith('.csv'):
@@ -268,9 +296,6 @@ def taskSubmit(request,taskid):
         result = cursor.execute(strSql)
         TDTSCHEMA = cursor.fetchall()
 
-        connection.commit()
-        connection.close()
-
         TDTSCHEMAORDER = []
         for data in TDTSCHEMA:
             row = {'COLUMN': data[0]}
@@ -297,13 +322,10 @@ def taskSubmit(request,taskid):
             else:
                 CreatedTableQuery = CreatedTableQuery+','
 
-        cursor = connection.cursor()
         strSql = CreatedTableQuery
         result = cursor.execute(strSql)
-        connection.commit()
-        connection.close()
+
         #PARSEDINFO 테이블에 데이터 추가 후 parsedid 얻어오기
-        cursor = connection.cursor()
         strsql ='''insert into PARSEDINFO(FILEADDR)  values('%s');'''%(CreatedTableAddress)
         result = cursor.execute(strsql)
         strsql = '''select ID
@@ -311,13 +333,11 @@ def taskSubmit(request,taskid):
                         where FILEADDR = '%s' '''%(CreatedTableAddress)
         result = cursor.execute(strsql)
         parsedId = cursor.fetchall()
-        connection.commit()
-        connection.close()
+
         parsedId = int(parsedId[0][0])
 
         #파싱데이터 테이블에 파일 저장
 
-        cursor = connection.cursor()
         for i in range(1,len(csv_list)):
             if(len(csv_list[i]) < len(TDTSCHEMALIST)):
                 break;
@@ -330,23 +350,17 @@ def taskSubmit(request,taskid):
 
             strsql = '''insert into %s values(%s);'''%(CreatedTableAddress, values)
             result = cursor.execute(strsql)
-            connection.commit()
-        connection.close()
 
         #originalinfo 튜플추가
-        cursor = connection.cursor()
         strsql = '''insert into ORIGINALINFO(NTH,STARTDATE,ENDDATE,TYPENUM,MEMID,PARSEDID) values('%d','%s','%s','%d','%s','%d');'''%(int(submitNum),startDate,endDate,serialNum,user,parsedId)
         result = cursor.execute(strsql)
-        connection.commit()
-        connection.close()
         #정량평가 요소 넣기
-        quantityCheck(CreatedTableAddress,parsedId)
+        quantityCheck(CreatedTableAddress,parsedId,cursor)
 
         #평가자 랜덤배정
-        evalDesignate(parsedId)
+        evalDesignate(parsedId,cursor)
 
         #APPLY totalsubmission 반영
-        cursor = connection.cursor()
         strsql = "UPDATE APPLY SET TOTALSUBMISSION ='%d' where MEMID = '%s' and TASKID = '%d' ;"%(int(submitNum),user,taskId)
         result = cursor.execute(strsql)
         connection.commit()
@@ -361,6 +375,10 @@ def taskSubmit(request,taskid):
 
 
 def taskCheck(request, taskid):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
+
     cursor = connection.cursor()
     sql = "SELECT ORIGINALDATATYPE.NAME, ORIGINALINFO.NTH, ORIGINALINFO.STARTDATE, ORIGINALINFO.ENDDATE,\
             PARSEDINFO.TOTALTUPLE-PARSEDINFO.DUPLICATETUPLE, PARSEDINFO.PNP\
@@ -373,7 +391,7 @@ def taskCheck(request, taskid):
 
     submit_result = []
     for submit in submissions:
-        row = {'dt_name':submit[0], 'nth':submit[1], 
+        row = {'dt_name':submit[0], 'nth':submit[1],
                 'period':"{} ~ {}".format(submit[2],submit[3]),
                 'tuple_num':submit[4],
                 'pnp':submit[5]}
@@ -387,16 +405,13 @@ def taskCheck(request, taskid):
     return render(request, 'submitter/taskCheck.html', {'submit_result':submit_result, 'total_result':total_result})
 
 
-def quantityCheck(tableName, ID):
+def quantityCheck(tableName, ID, cursor):
 
         try:
-            cursor = connection.cursor()
             strSql = "SELECT * FROM %s"%(tableName)
             result = cursor.execute(strSql)
             paresedTable = cursor.fetchall()
 
-            connection.commit()
-            connection.close()
 
             total_tup = len(paresedTable)
             #중복 튜플 수 검사
@@ -416,38 +431,30 @@ def quantityCheck(tableName, ID):
             null_ratio = round(null_num / total_ele, 5)
 
             #정성평가 지표 집어넣기
-            cursor = connection.cursor()
             strsql = "UPDATE PARSEDINFO SET TOTALTUPLE='%d', DUPLICATETUPLE='%d', NULLRATIO='%f' where ID = '%d';"%(total_tup,dupli_tup,null_ratio,ID)
             result = cursor.execute(strsql)
-            connection.commit()
-            connection.close()
         except:
             connection.rollback()
             print("Failed to get Data")
 
         return
 
-def evalDesignate(ID):
+def evalDesignate(ID, cursor):
     try:
-        cursor = connection.cursor()
         strsql = '''select ID
                         from MEMBER
                         where ROLE = 'E' '''
         result = cursor.execute(strsql)
         evaluators = cursor.fetchall()
-        connection.commit()
-        connection.close()
+
 
         eval_count = len(evaluators)
         random_num = random.randint(0,eval_count-1)
 
         random_evalid = evaluators[random_num][0]
 
-        cursor = connection.cursor()
         strsql = "UPDATE PARSEDINFO SET EVALID='%s' where ID = '%d';"%(random_evalid,ID)
         result = cursor.execute(strsql)
-        connection.commit()
-        connection.close()
 
 
     except:

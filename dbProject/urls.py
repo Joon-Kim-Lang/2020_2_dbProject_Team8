@@ -19,7 +19,7 @@ from administrator import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('submitter', include('submitter.urls')),
+    path('submitter/', include('submitter.urls')),
     path('evaluater/',include('evaluater.urls')),
     path('admin/', admin.site.urls),
     # ==========================
