@@ -58,6 +58,25 @@ def evaluating(request) :
             cursor = connection.cursor()
             strSql = '''UPDATE APPLY SET ACCEPTEDTUPLE = ACCEPTEDTUPLE + %d WHERE MEMID = "%s"''' % (int(total_tuple),submitter_id)
             result = cursor.execute(strSql)
+
+            n_task = request.POST['FILEADDR'].split('_')[2]
+            cursor = connection.cursor()
+            strSql = '''SELECT TDTNAME FROM TASKDATATABLE WHERE TASKID = %d''' % (int(n_task))
+            result = cursor.execute(strSql)
+            tdt_name = cursor.fetchall()[0][0]
+
+            cursor = connection.cursor()
+            strSql = '''SELECT * FROM %s''' %(request.POST['FILEADDR'])
+            result = cursor.execute(strSql)
+            datas = cursor.fetchall()
+
+            cursor = connection.cursor()
+            strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE 
+                                FROM INFORMATION_SCHEMA.COLUMNS 
+                                WHERE TABLE_NAME='%s';''' % (addr)
+
+            result = cursor.execute(strSql)
+
             # cursor = connection.cursor()
             # strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE
             #                     FROM INFORMATION_SCHEMA.COLUMNS
