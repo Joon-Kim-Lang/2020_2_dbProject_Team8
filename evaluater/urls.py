@@ -18,7 +18,11 @@ from .import views
 
 app_name = 'evaluater'
 urlpatterns = [
+    path('', views.sessionRecord),
     path('evaluateMain/', views.evaluateMain, name='evaluateMain'),
     path('evaluate/',views.evaluating,name='evaluating'),
-    path('evaluater/<str:addr>/fileDescription', views.evalDescription, name='evalDescription')
+    path('evaluater/<str:addr>/fileDescription', views.evalDescription, name='evalDescription'),
+    path('logout/', views.logout, name='logout'),
+    path('wrong-access/', views.wrongAccess, name='wrongAccess'),
+
 ]

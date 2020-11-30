@@ -1,14 +1,32 @@
 from django.db import connection
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.urls import reverse
 
-user = 'eva_1'
+
+def wrongAccess(request):
+    return render(request, 'evaluater/wrongAccess.html')
+
+def sessionRecord(request):
+    user = request.GET['id']
+    request.session['user'] = user
+    return redirect("evaluater:evaluateMain")
+
+def logout(request):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'evaluater/wrongAccess.html')
+    request.session.pop('user')
+    request.session.flush()
+    return render(request, "evaluater/logOut.html")
 
 
 def evaluateMain(request) :
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'evaluater/wrongAccess.html')
     try :
         cursor = connection.cursor()
         strSql = "SELECT FILEADDR,PNP,QUALITY,SCORE,ID  FROM PARSEDINFO WHERE PARSEDINFO.EVALID ='%s'"%(user)
@@ -106,6 +124,9 @@ def evaluating(request) :
     return HttpResponseRedirect(reverse('evaluater:evaluateMain'))
 
 def evalDescription(request, addr) :
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'evaluater/wrongAccess.html')
 
     try :
         cursor = connection.cursor()

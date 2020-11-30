@@ -25,6 +25,7 @@
     <title>Title</title>
 </head>
 <body>
+
     {% for name in FILE_NAME %}
     <h1> {{ name }} </h1>
     {% endfor %}
@@ -44,5 +45,6 @@
 
     </table>
 {% endif %}
+    <a href="{% url 'evaluater:evaluateMain' %}">돌아가기</a>
 </body>
 </html>
