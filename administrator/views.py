@@ -280,9 +280,9 @@ def searchmember(request):
                 """
         if gender != '':
             query += f" AND GENDER = '{gender}'"
-        if ageFrom != '':
-            query += " AND BIRTHDATE >= '" + str(date.today().year - int(ageTo) + 1) + "-01-01'"
         if ageTo != '':
+            query += " AND BIRTHDATE >= '" + str(date.today().year - int(ageTo) + 1) + "-01-01'"
+        if ageFrom != '':
             query += " AND BIRTHDATE <= '" + str(date.today().year - int(ageFrom) + 1) + "-12-31'"
         if role != '':
             query += f" AND ROLE = '{role}'"

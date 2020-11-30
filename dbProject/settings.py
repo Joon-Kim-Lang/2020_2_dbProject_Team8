@@ -56,9 +56,6 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-# session destroyed at browser close
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
 ROOT_URLCONF = 'dbProject.urls'
 
 TEMPLATES = [
