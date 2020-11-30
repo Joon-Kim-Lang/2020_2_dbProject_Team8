@@ -7,6 +7,9 @@ from django.db import connection
 # json 
 import json
 
+# time 
+from datetime import date
+
 # NEW USER REGISTERING
 @api_view(['POST'])
 def register(request):
@@ -240,3 +243,128 @@ def logout(request):
         del(request.session['loginInfo'])
     
     return Response({'status': 'success'})
+
+# MEMBER STATISTICS
+@api_view(['POST'])
+def searchmember(request):
+    """
+    Search member from DB with search conditions
+    
+    - Parameter
+    ID, gender, ageFrom, ageTo, role, task
+
+    - Error List
+    RequestError        : invalid request data
+    DBQueryError        : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+        gender = request.data['gender']
+        ageFrom = request.data['ageFrom']
+        ageTo = request.data['ageTo']
+        role = request.data['role']
+        task = request.data['task']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+
+    # Get search information
+    try:
+        query = f""" SELECT ID, GENDER, BIRTHDATE, ROLE
+                FROM MEMBER
+                WHERE ID LIKE '%{userid}%'
+                """
+        if gender != '':
+            query += f" AND GENDER = '{gender}'"
+        if ageFrom != '':
+            query += " AND BIRTHDATE >= '" + str(date.today().year - int(ageTo) + 1) + "-01-01'"
+        if ageTo != '':
+            query += " AND BIRTHDATE <= '" + str(date.today().year - int(ageFrom) + 1) + "-12-31'"
+        if role != '':
+            query += f" AND ROLE = '{role}'"
+        if role == 'S' and task != '':
+            query += f" AND ID IN (SELECT MEMID FROM APPLY WHERE TASKID = {task})"
+        elif role == 'E' and task != '':
+            query += f""" AND ID IN (SELECT EVALID FROM PARSEDINFO
+                    WHERE ID IN (SELECT PARSEDID FROM ORIGINALINFO
+                    WHERE TYPENUM IN (SELECT SERIALNUM FROM ORIGINALDATATYPE WHERE TASKID = {task})
+                    )
+                    )                    
+                    """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    # Search result array
+    res = []
+    for iter in response:
+        res.append([iter[0], iter[1], str(date.today().year - iter[2].year + 1), iter[3]])
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({"state": "success", "result" : res })
+
+# MEMBER INFO
+@api_view(['POST'])
+def memberinfo(request):
+    """
+    Return member's info
+      * Submitter : return participating task, task participate info
+      * Evaluator : return lists of parsing data sequence file 
+    
+    - Parameter
+    ID, role
+
+    - Error List
+    RequestError        : invalid request data
+    DBQueryError        : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+        role = request.data['role']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+
+    # Get user information by role
+    try:
+        if role == 'S':
+            query = f""" SELECT OD.TASKID, OI.INFONUM, OI.NTH, PI.FILEADDR, PI.PNP, PI.SCORE
+                    FROM ORIGINALINFO as OI, ORIGINALDATATYPE as OD, PARSEDINFO as PI
+                    WHERE OI.MEMID = '{userid}' AND OI.TYPENUM = OD.SERIALNUM AND OI.PARSEDID = PI.ID
+                    """
+        elif role == 'E':
+            query = f""" SELECT * FROM PARSEDINFO WHERE EVALID = '{userid}'
+                    """
+            
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    print(response)
+    # Search result array
+    res = []
+    for iter in response:
+        res.append(iter)
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success', 'role': role, 'result': res})

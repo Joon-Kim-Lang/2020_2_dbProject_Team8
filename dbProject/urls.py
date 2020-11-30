@@ -30,5 +30,7 @@ urlpatterns = [
     path('api/task/create/', views.createTask),
     path('api/login/', views.login),
     path('api/getinfo', views.getinfo),
-    path('api/logout/', views.logout)
+    path('api/logout/', views.logout),
+    path('api/member/search/', views.searchmember),
+    path('api/member/info/', views.memberinfo)
 ]
