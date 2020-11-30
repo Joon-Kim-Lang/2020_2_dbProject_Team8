@@ -88,12 +88,12 @@ def evaluating(request) :
             result = cursor.execute(strSql)
             datas = cursor.fetchall()
 
-            cursor = connection.cursor()
-            strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE 
-                                FROM INFORMATION_SCHEMA.COLUMNS 
-                                WHERE TABLE_NAME='%s';''' % (addr)
-
-            result = cursor.execute(strSql)
+            # cursor = connection.cursor()
+            # strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE
+            #                     FROM INFORMATION_SCHEMA.COLUMNS
+            #                     WHERE TABLE_NAME='%s';''' % (a)
+            #
+            # result = cursor.execute(strSql)
 
             # cursor = connection.cursor()
             # strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE
