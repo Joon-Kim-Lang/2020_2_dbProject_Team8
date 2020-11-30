@@ -11,15 +11,15 @@ import random
 def sessionRecord(request):
     user = request.GET['id']
     request.session['user'] = user
-
     return redirect("submitter:submitMain")
 
 def logout(request):
+    user = request.session.get('user')
+    if user is None:
+        return render(request, 'submitter/wrongAccess.html')
     request.session.pop('user')
     request.session.flush()
-
-
-    return redirect("submitter:submitMain")
+    return render(request, "submitter/logOut.html")
 
 # 제출자로 로그인했을 경우 초기 페이지로 보내주는 view
 # 로그인한 사용자 정보 얻어오기

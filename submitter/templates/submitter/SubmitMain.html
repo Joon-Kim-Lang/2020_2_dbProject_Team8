@@ -10,7 +10,11 @@
   <h1>제출자 메인화면</h1>
   <p id="evalscore">
     <strong><u>{{user}} 님, 안녕하세요 :)</u></strong> <br><br>
-    현재 나의 평가점수 : {{evalscore}}</p>
+    {% if evalscore is null %}
+    평가 내역이 없습니다.</p>
+  {% else %}
+  현재 나의 평가점수 : {{evalscore}}</p>
+  {% endif %}
   <div id="task-all">
     <h2>
       전체 태스크 목록
@@ -116,9 +120,10 @@
         </tr>
         {% endfor %}
       </table>
-      <button type="button" onclick="location.href='{% url 'submitter:logout'%}'">로그아웃</button>
     </div>
   </div>
+
+  <a href="{% url 'submitter:logout'%}">로그아웃</a>
 </body>
 
 <style>
