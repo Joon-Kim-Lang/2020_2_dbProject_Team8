@@ -7,143 +7,170 @@
 </head>
 
 <body>
-  <h1>제출자 메인화면</h1>
-  <p id="evalscore">
-    <strong><u>{{user}} 님, 안녕하세요 :)</u></strong> <br><br>
-    {% if evalscore is null %}
-    평가 내역이 없습니다.</p>
-  {% else %}
-  현재 나의 평가점수 : {{evalscore}}</p>
-  {% endif %}
-  <div id="task-all">
-    <h2>
-      전체 태스크 목록
-    </h2>
-    <table>
-      <th>태스크 명</th>
-      <th>설명</th>
-      {% if all|length == 0%}
-      <tr>
-        <td colspan=2>해당 내역이 없습니다.</td>
-      </tr>
-      {% endif %}
-      {% for task in all %}
-      <tr class="task">
-        <td>{{task.TaskName}}</td>
-        <td class="taskdesc">"{{task.describe}}"</td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
+  <div id="container">
+    <h1>제출자 메인화면</h1>
+    <p id="evalscore">
+      <strong><u>{{user}} 님, 안녕하세요 :)</u></strong> <br><br>
+      {% if evalscore is null %}
+      현재 평가 내역이 없어 평가 점수를 조회할 수 없습니다.</p>
+    {% else %}
+    현재 나의 평가점수 : {{evalscore}}</p>
+    {% endif %}
 
-  <div id="parTasks">
-    <h2>
-      참여 중인 태스크 목록
-    </h2>
-    <table>
-      <th>태스크 명</th>
-      <th>제출하기</th>
-      <th>제출현황</th>
-      {% if accepted|length == 0%}
-      <tr>
-        <td colspan=3>해당 내역이 없습니다.</td>
-      </tr>
-      {% endif %}
-      {% for task in accepted %}
-      <tr class="task">
-        <td>{{task.TaskName}}</td>
-        <td><a href="{% url 'submitter:taskSubmit' taskid=task.TaskID %}">SUBMIT</a></td>
-        <td><a href="{% url 'submitter:taskCheck' taskid=task.TaskID %}">CHECK</a></td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
-
-  <div id="notparTasks">
-    <h2>
-      미참여 중인 태스크 목록
-    </h2>
-    <div id="waiting">
-      <h3>
-        승인 대기중인 태스크 목록
-      </h3>
+    <div id="task-all">
+      <h2>
+        전체 태스크 목록
+      </h2>
       <table>
         <th>태스크 명</th>
-        <th>신청 취소</th>
-        {% if waiting|length == 0%}
+        <th>설명</th>
+        {% if all|length == 0%}
         <tr>
           <td colspan=2>해당 내역이 없습니다.</td>
         </tr>
         {% endif %}
-        {% for task in waiting %}
+        {% for task in all %}
         <tr class="task">
           <td>{{task.TaskName}}</td>
-          <td><a href="{% url 'submitter:taskCancel' taskid=task.TaskID %}">CANCEL</a></td>
+          <td class="taskdesc">"{{task.describe}}"</td>
         </tr>
         {% endfor %}
       </table>
     </div>
-    <div id="notAccepted">
-      <h3>
-        승인받지 못한 태스크 목록
-      </h3>
+    <div id="parTasks">
+      <h2>
+        참여 중인 태스크 목록
+      </h2>
       <table>
         <th>태스크 명</th>
-        {% if not_accepted|length == 0%}
+        <th>제출하기</th>
+        <th>제출현황</th>
+        {% if accepted|length == 0%}
         <tr>
-          <td>해당 내역이 없습니다.</td>
+          <td colspan=3>해당 내역이 없습니다.</td>
         </tr>
         {% endif %}
-        {% for task in not_accepted %}
+        {% for task in accepted %}
         <tr class="task">
           <td>{{task.TaskName}}</td>
+          <td><a href="{% url 'submitter:taskSubmit' taskid=task.TaskID %}">SUBMIT</a></td>
+          <td><a href="{% url 'submitter:taskCheck' taskid=task.TaskID %}">CHECK</a></td>
         </tr>
         {% endfor %}
       </table>
     </div>
-    <div id="notApplied">
-      <h3>
-        신청하지 않은 태스크 목록
-      </h3>
-      <table>
-        <th>태스크 명</th>
-        <th>신청하기</th>
-        {% if not_applied|length == 0%}
-        <tr>
-          <td colspan=2>해당 내역이 없습니다.</td>
-        </tr>
-        {% endif %}
-        {% for task in not_applied %}
-        <tr class="task">
-          <td>{{task.TaskName}}</td>
-          <td><a href="{% url 'submitter:taskApply' taskid=task.TaskID %}">APPLY</a></td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
-  </div>
 
-  <a href="{% url 'submitter:logout'%}">로그아웃</a>
+    <div id="notparTasks">
+      <h2>
+        미참여 중인 태스크 목록
+      </h2>
+      <div id="waiting">
+        <h3>
+          승인 대기중인 태스크 목록
+        </h3>
+        <table>
+          <th>태스크 명</th>
+          <th>신청 취소</th>
+          {% if waiting|length == 0%}
+          <tr>
+            <td colspan=2>해당 내역이 없습니다.</td>
+          </tr>
+          {% endif %}
+          {% for task in waiting %}
+          <tr class="task">
+            <td>{{task.TaskName}}</td>
+            <td><a href="{% url 'submitter:taskCancel' taskid=task.TaskID %}">CANCEL</a></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div id="notAccepted">
+        <h3>
+          승인받지 못한 태스크 목록
+        </h3>
+        <table>
+          <th>태스크 명</th>
+          {% if not_accepted|length == 0%}
+          <tr>
+            <td>해당 내역이 없습니다.</td>
+          </tr>
+          {% endif %}
+          {% for task in not_accepted %}
+          <tr class="task">
+            <td>{{task.TaskName}}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      <div id="notApplied">
+        <h3>
+          신청하지 않은 태스크 목록
+        </h3>
+        <table>
+          <th>태스크 명</th>
+          <th>신청하기</th>
+          {% if not_applied|length == 0%}
+          <tr>
+            <td colspan=2>해당 내역이 없습니다.</td>
+          </tr>
+          {% endif %}
+          {% for task in not_applied %}
+          <tr class="task">
+            <td>{{task.TaskName}}</td>
+            <td><a href="{% url 'submitter:taskApply' taskid=task.TaskID %}">APPLY</a></td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <a id="logout" href="{% url 'submitter:logout'%}">logout</a>
+  </div>
 </body>
 
 <style>
+  /* common */
   th,
   td {
     text-align: center;
     padding: 15px;
-    border: 1px solid black;
+    border-bottom: 1px solid #CECECE;
   }
 
   th {
     font-size: 20px;
-    background-color: #2773E2;
-    color: white;
+    color: #454545;
+  }
+
+  td {
+    color: #707070;
+  }
+
+  tr {
+    border-bottom: 1px solid #CECECE;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
   }
 
   table {
-    border-collapse: collapse;
-    margin: 15px;
-    width: 700px;
+    margin: 15px auto;
+    width: 1000px;
+    border-radius: 25px;
+    border: 1px solid #CECECE;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #2773E2;
+  }
+
+  h2::before,
+  h2::after {
+    content: '"'
   }
 
   a {
@@ -152,15 +179,45 @@
     background-color: #2773E2;
     color: white;
     padding: 10px;
+    border-radius: 10px;
   }
 
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  /* dedicated for this html */
   #evalscore {
-    border: 1px dotted black;
+    border-radius: 25px;
     padding: 30px;
     text-align: center;
     width: 600px;
-    margin: 30px;
+    margin: 30px auto;
     font-size: 20px;
+    background-color: #ecf4f9;
+  }
+
+  #logout {
+    margin: 50px auto;
+    display: inline-block;
+  }
+
+  #task-all,
+  #parTasks,
+  #notparTasks {
+    margin: 50px auto;
   }
 </style>
 

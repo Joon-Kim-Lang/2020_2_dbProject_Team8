@@ -9,7 +9,7 @@ class Login extends Component {
     handleLogin = (id, password) => {
         return this.props.loginRequest(id, password).then(
             () => {
-                if(this.props.status === "SUCCESS") {
+                if (this.props.status === "SUCCESS") {
                     let loginData = {
                         isLoggedIn: true,
                         userid: id,
@@ -24,7 +24,7 @@ class Login extends Component {
                     else if (this.props.role === "S")
                         window.location.assign("http://localhost:3000/submitter?id=" + id)
                     else
-                        window.location.assign("http://localhost:3000/evaluator?id=" + id)
+                        window.location.assign("http://localhost:3000/evaluater?id=" + id)
                     return true;
                 } else {
                     let $toastContent = window.$('<span style="color: #FFB4BA">' + this.props.errorMessage + '</span>');

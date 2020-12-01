@@ -7,99 +7,108 @@
 </head>
 
 <body>
-  <h1>원본 데이터 타입 신청</h1>
-  <a href="">돌아가기</a>
-  <h2>
-    <신청 시 안내사항>
-  </h2>
-  <div id="how">
-    1. 스키마 정보란에는 칼럼 명들을 ','로 구분지어 작성해주시면 됩니다.<br>
-    ex) 칼럼 명들이 서울, 대전, 대구, 부산일 경우 : "서울,대전,대구,부산"을 입력<br>
-    2. 자료형 정보란에는 각 칼럼의 자료형을 스키마 정보란에 기재한 순서에 맞춰 ','로 구분지어 작성해주세요.<br>
-    ex) 서울, 대전, 대구, 부산의 자료형이 각각 int, string, string, int일 경우 : "int,string,string,int"을 입력<br>
+  <div id="container">
+    <h1>원본 데이터 타입 신청</h1>
+    <div class="section">
+      <h2>
+        신청 시 안내사항
+      </h2>
+      <div id="how">
+        1. 스키마 정보란에는 칼럼 명들을 ','로 구분지어 작성해주시면 됩니다.<br>
+        ex) 칼럼 명들이 서울, 대전, 대구, 부산일 경우 : "서울,대전,대구,부산"을 입력<br><br>
+        2. 자료형 정보란에는 각 칼럼의 자료형을 스키마 정보란에 기재한 순서에 맞춰 ','로 구분지어 작성해주세요.<br>
+        ex) 서울, 대전, 대구, 부산의 자료형이 각각 int, string, string, int일 경우 : "int,string,string,int"을 입력<br><br>
 
-    ** 반드시 양식에 맞춰 작성해주세요. 양식이 맞지 않을 경우, 신청 내용이 승인되지 않을 수 있습니다.
-  </div>
-  <div id="possible-types">
-    <p><u>가능한 데이터 타입</u></p>
-    <p>int, string, date, time, float, boolean</p>
-  </div>
-
-  <h2>
-    <현재 태스크에서 사용되고 있는 데이터 타입>
-  </h2>
-  <table>
-    <th>데이터 타입 명</th>
-    <th>스키마 정보</th>
-    <th>자료형 정보</th>
-    {% for dt in all_dt%}
-    <tr class="original_dt">
-      <td>{{dt.dtName}}</td>
-      <td>{{dt.info}}</td>
-      <td>&nbsp;</td>
-    </tr>
-    {% endfor %}
-  </table>
-
-  <h2>
-    <현재 태스크에 신청된 데이터 타입>
-  </h2>
-  <table>
-    <th>데이터 타입 명</th>
-    <th>스키마 정보</th>
-    <th>자료형 정보</th>
-    <th>나의 신청</th>
-    {% for dt in applied_dt%}
-    <tr class="applied_dt">
-      <td>{{dt.dtName}}</td>
-      <td>{{dt.info}}</td>
-      <td>{{dt.type}}</td>
-      <td>
-        {% if dt.submitter == user%}
-        <form method="POST" action="{% url 'submitter:datatypeCancel' taskid=taskid%}" class="processing-form">
-          {%csrf_token%}
-          <input type="hidden" name="form_type" value="show">
-          <input type="hidden" name="applynum" value={{dt.applynum}}>
-          <button type="submit" class="cancel">신청 취소</button>
-        </form>
-        {% else %}
-        -
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-
-  <h2>
-    <신청란>
-  </h2>
-  <form method="POST" class="post-form">
-    {%csrf_token%}
-    {{form.as_p}}
-    <div class="button">
-      <button type="submit" class="apply">신청</button>
+        <span class="star">**</span> 반드시 양식에 맞춰 작성해주세요. 양식이 맞지 않을 경우, 신청 내용이 승인되지 않을 수 있습니다.<span class="star">**</span>
+      </div>
+      <div id="possible-types">
+        <p><u>가능한 데이터 타입</u></p>
+        <p>int, string, date, time, float, boolean</p>
+      </div>
     </div>
-    <p>
-      <span class="star">*</span> 표시는 필수 입력 사항입니다.
-    </p>
-  </form>
+
+    <div class="section">
+      <h2>
+        현재 태스크에서 사용되고 있는 데이터 타입
+      </h2>
+      <table>
+        <th>데이터 타입 명</th>
+        <th>스키마 정보</th>
+        <th>자료형 정보</th>
+        {% for dt in all_dt%}
+        <tr class="original_dt">
+          <td>{{dt.dtName}}</td>
+          <td>{{dt.info}}</td>
+          <td>{{dt.type}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>현재 태스크에 신청된 데이터 타입
+      </h2>
+      <table>
+        <th>데이터 타입 명</th>
+        <th>스키마 정보</th>
+        <th>자료형 정보</th>
+        <th>나의 신청</th>
+        {% for dt in applied_dt%}
+        <tr class="applied_dt">
+          <td>{{dt.dtName}}</td>
+          <td>{{dt.info}}</td>
+          <td>{{dt.type}}</td>
+          <td>
+            {% if dt.submitter == user%}
+            <form method="POST" action="{% url 'submitter:datatypeCancel' taskid=taskid%}" class="processing-form">
+              {%csrf_token%}
+              <input type="hidden" name="form_type" value="show">
+              <input type="hidden" name="applynum" value={{dt.applynum}}>
+              <button type="submit" class="cancel">CANCEL</button>
+            </form>
+            {% else %}
+            -
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>
+        신청란
+      </h2>
+      <form method="POST" class="post-form">
+        {%csrf_token%}
+        {{form.as_p}}
+        <p>
+          <span class="star">*</span> 표시는 필수 입력 사항입니다.
+        </p>
+        <div class="button">
+          <button type="submit" class="apply">SUBMIT</button>
+        </div>
+      </form>
+    </div>
+
+    <a id="back" href="{% url 'submitter:taskSubmit' taskid=taskid %}">BACK</a>
+  </div>
 </body>
 
 <style>
-  h1 {
-    display: inline;
-  }
-
-  th,
-  td {
+  #possible-types {
+    border-radius: 25px;
+    padding: 30px;
     text-align: center;
-    padding: 15px;
-    border: 1px solid black;
+    width: 600px;
+    margin: 30px auto;
+    background-color: #ecf4f9;
+    border: 0;
   }
 
-  table {
-    border-collapse: collapse;
-    margin: 15px;
+  .cancel {
+    font-size: 12px;
+    padding: 10px;
   }
 
   .star {
@@ -107,18 +116,16 @@
   }
 
   .post-form {
-    border: 1px solid black;
-    width: 50%;
+    border: 1px solid #CECECE;
+    border-radius: 10px;
+    width: 700px;
     text-align: center;
-  }
-
-  input:placeholder {
-    color: lightgrey;
+    margin: auto;
   }
 
   label {
     display: inline-block;
-    width: 15%;
+    width: 20%;
     text-align: right;
   }
 
@@ -131,14 +138,88 @@
     width: 70%;
   }
 
-  #possible-types {
-    text-align: center;
-    border: 1px dotted black;
-    width: 30%;
-  }
-
   div {
     margin: 10px;
+  }
+
+  /* common */
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border-bottom: 1px solid #CECECE;
+  }
+
+  th {
+    font-size: 20px;
+    color: #454545;
+  }
+
+  td {
+    color: #707070;
+  }
+
+  tr {
+    border-bottom: 1px solid #CECECE;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  table {
+    margin: 15px auto;
+    width: 1000px;
+    border-radius: 25px;
+    border: 1px solid #CECECE;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #2773E2;
+  }
+
+  h2::before,
+  h2::after {
+    content: '"'
+  }
+
+  button,
+  a {
+    font-size: 15px;
+    text-decoration: none;
+    background-color: #2773E2;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    border: 0;
+  }
+
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  #back {
+    margin: 50px auto;
+    display: inline-block;
+  }
+
+  .section {
+    margin: 50px auto;
   }
 </style>
 

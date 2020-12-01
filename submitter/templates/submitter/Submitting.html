@@ -1,37 +1,170 @@
 <html>
+
 <body>
-<form action="{% url 'submitter:taskSubmit' taskid=taskId %}" method="POST" enctype="multipart/form-data" class="form-horizontal">
-{% csrf_token %}
-<input type="hidden" name="taskId" value="{{taskId}}"></input>
-<div class="form-group" style = "padding: 5px 1px 2px 3px;">
-    submitNum : <input type='number' name="submitNum" value = '{{curSubmission}}'readonly></br>
-    startDate : <input type='text' name="startDate"></br>
-    endDate : <input type='text' name="endDate"></br>
-</div>
-<div class='selection' style = "padding: 15px 1px 2px 3px;">
-    <p> 스키마  타입 선택</p>
+  <div id="container">
+    <h1>파일 제출</h1>
+    <form action="{% url 'submitter:taskSubmit' taskid=taskId %}" method="POST" enctype="multipart/form-data"
+      class="form-horizontal">
+      {% csrf_token %}
+      <input type="hidden" name="taskId" value="{{taskId}}"></input>
+      <h2>기본 정보 입력</h2>
+      <div class="basic">
+        <p>
+          <span class="label">회차(자동입력) </span> <input required="True" type='number' name="submitNum"
+            value='{{curSubmission}}' readonly>
+        </p>
+        <p>
+          <span class="label"><span class="star">*</span> 수집기간 시작 날짜</span> <input required="True" type='date'
+            name="startDate"></br>
+        </p>
+        <p>
+          <span class="label"><span class="star">*</span> 수집기간 마지막 날짜</span> <input required="True" type='date'
+            name="endDate"></br>
+        </p>
+        <p>
+          <span class="star">*</span> 표시는 필수 입력 사항입니다.
+        </p>
+      </div>
 
-    <select name = 'originalDataType'>
-    {% for item in context %}
-      <option value = '{{item.SCHEMA}},{{item.SERIALNUM}}' name = 'schema'> {{item.NAME}}/ {{item.SCHEMA}}({{item.TYPE}})</option>
-    {% endfor %}
-  </select>
+      <h2> 스키마 타입 선택</h2>
+      <div class='selection'>
+        <select name='originalDataType'>
+          {% for item in context %}
+          <option value='{{item.SCHEMA}},{{item.SERIALNUM}}' name='schema'> {{item.NAME}}/
+            {{item.SCHEMA}}({{item.TYPE}})</option>
+          {% endfor %}
+        </select>
+        <p>
+          원하는 타입이 없으신가요?
+          <a href="{% url 'submitter:datatypeApply' taskid=taskId %}" class="schema_register">APPLY</a>
+        </p>
+      </div>
 
-  <a href="{% url 'submitter:datatypeApply' taskid=taskId %}" class="schema_register">스키마 등록</a>
+      <h2>CSV 파일 업로드</h2>
+      <div class="fileUpload">
+        <input type="file" name="csv_file" id="csv_file" required="True" class="form-control"></input>
+      </div>
 
-</div>
-
-<div class="fileUpload" style = "padding: 15px 1px 2px 3px;">
-    <p>CSV 파일 업로드:</p>
-
-    <input type="file" name="csv_file" id="csv_file" required="True" class="form-control"></input>
-</div>
-<div class="form-group" style = "padding: 15px 1px 2px 3px;">
-    <input type="submit" name='Register'></input>
-    <button type="button" onclick="location.href='{% url 'submitter:submitMain'%}'">취소</button>
-
-</div>
-</form>
-
+      <div class="form-group">
+        <button type="submit" name='Register'>제출</button>
+        <a href="{% url 'submitter:submitMain' %}">취소</a>
+      </div>
+    </form>
+  </div>
 </body>
+
+<style>
+  .star {
+    color: red;
+  }
+
+  select,
+  .basic input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #CECECE;
+    cursor: pointer;
+  }
+
+  .schema_register {
+    display: inline-block;
+  }
+
+  .basic,
+  .selection,
+  .fileUpload {
+    border: 1px solid #CECECE;
+    border-radius: 10px;
+    width: 700px;
+    text-align: center;
+    margin: 50px auto;
+    margin-top: 10px;
+    padding: 30px;
+  }
+
+  /* common */
+  button[type="submit"] {
+    cursor: pointer;
+  }
+
+  th,
+  td {
+    text-align: center;
+    padding: 15px;
+    border-bottom: 1px solid #CECECE;
+  }
+
+  th {
+    font-size: 20px;
+    color: #454545;
+  }
+
+  td {
+    color: #707070;
+  }
+
+  tr {
+    border-bottom: 1px solid #CECECE;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  table {
+    margin: 15px auto;
+    width: 1000px;
+    border-radius: 25px;
+    border: 1px solid #CECECE;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #2773E2;
+  }
+
+  h2::before,
+  h2::after {
+    content: '"'
+  }
+
+  button,
+  a {
+    font-size: 15px;
+    text-decoration: none;
+    background-color: #2773E2;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    border: 0;
+  }
+
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  #back {
+    margin: 50px auto;
+    display: inline-block;
+  }
+
+  .section {
+    margin: 50px auto;
+  }
+</style>
+
 </html>

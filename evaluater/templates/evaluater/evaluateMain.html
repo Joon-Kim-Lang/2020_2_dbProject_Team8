@@ -1,50 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>평가자 메인화면</title>
 </head>
+
 <body>
-    <h1>평가자 메인화면</h1>
-    <div id="not_eval">
-        <h2>< 평가해야할 태스크 목록 ></h2>
-        {% if not_eval %}
+    <div id="container">
+        <h1>평가자 메인화면</h1>
+        <div id="not_eval">
+            <h2>평가해야할 태스크 목록</h2>
+            {% if not_eval %}
+            <div class="task_not_eval">
+                <table>
+                    <th>태스크명</th>
+                    <th>파일 보기</th>
+                    <th>점수 주기</th>
+                    <th>PASS 최소 점수</th>
+                    <th>P/NP 선택</th>
+                    {% for task in not_eval %}
+                    <tr>
+                        <form action="{% url 'evaluater:evaluating' %}" method="post" }>
+                            <input type="hidden" name="ID" value="{{ task.ID }}">
+                            <input type="hidden" name="FILEADDR" value="{{ task.FILEADDR }}">
+                            {%  csrf_token %}
+                            <td>{{ task.FILEADDR }}</td>
+                            <td><a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">CHECK</a></td>
+                            <td><input type="number" min="0" max="10" value="5" step="1" name="quality"></td>
+                            <td>{{ task.TASK_SCORE }}</td>
+                            <td><button type="submit" name="PNP" value="P">P</button>
+                                <button type="submit" name="PNP" value="NP">NP</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            {% else %}
+            <div>평가해야할 태스크 없음</div>
+            {% endif %}
 
-        <div class = "task_not_eval">
-            {% for task in not_eval %}
-            <form action="{% url 'evaluater:evaluating' %}" method="post"}>
-                {%  csrf_token %}
-
-                <a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">{{ task.FILEADDR }}</a></br>
-                점수주기 <input type="number" min="0" max="10" value="5" step="1"  name="quality"></br>
-                <input type = "hidden" name="ID" value="{{ task.ID }}">
-                <input type = "hidden" name="FILEADDR" value ="{{ task.FILEADDR }}">
-                {{ task.TASK_SCORE }}점이 넘어야 PASS할 수 있습니다. </br>
-            <input type="submit" name="PNP" value="P"><input type="submit" name="PNP" value="NP">
-            </form>
-            {% endfor %}
         </div>
-        {% else %}
-        <div>평가해야할 태스크 없음</div>
-        {% endif %}
-
-    </div>
-    <div id="eval">
-        <h2>< 평가한 태스크 목록 ></h2>
-        {% if eval %}
-
-        <div class = "task_eval">
-            {% for task in eval %}
-                <a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">{{ task.FILEADDR }}</a> : {{ task.QUALITY }}점, {{ task.PNP}} </br>
-
-            {% endfor %}
+        <div id="eval">
+            <h2>
+                평가한 태스크 목록
+            </h2>
+            <div class="task_eval">
+                <table>
+                    <th>태스크명</th>
+                    <th>파일 보기</th>
+                    <th>점수</th>
+                    <th>P/NP</th>
+                    {% if eval %}
+                    {% for task in eval %}
+                    <tr>
+                        <td>{{ task.FILEADDR }}</td>
+                        <td><a href="{% url 'evaluater:evalDescription' task.FILEADDR %}">CHECK</a></td>
+                        <td>{{ task.QUALITY }} 점</td>
+                        <td>{{ task.PNP}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan=4>해당 내역이 없습니다.</td>
+                    </tr>
+                    {%endif%}
+                </table>
+            </div>
         </div>
-        {% else %}
-        <div>평가해야할 태스크 없음</div>
-        {% endif %}
-
+        <a id="logout" href="{% url 'evaluater:logout'%}">로그아웃</a>
     </div>
-  <a href="{% url 'evaluater:logout'%}">로그아웃</a>
-
 </body>
+
+<style>
+    #logout {
+        margin: 50px auto;
+        display: inline-block;
+    }
+
+    #eval,
+    #not_eval {
+        margin: 50px auto;
+    }
+
+    /* common */
+    th,
+    td {
+        text-align: center;
+        padding: 15px;
+        border-bottom: 1px solid #CECECE;
+    }
+
+    th {
+        font-size: 20px;
+        color: #454545;
+    }
+
+    td {
+        color: #707070;
+    }
+
+    tr {
+        border-bottom: 1px solid #CECECE;
+    }
+
+    tr:last-child td {
+        border-bottom: 0;
+    }
+
+    table {
+        margin: 15px auto;
+        width: 1000px;
+        border-radius: 25px;
+        border: 1px solid #CECECE;
+        box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+    }
+
+    h1,
+    h2,
+    h3 {
+        color: #2773E2;
+    }
+
+    h2::before,
+    h2::after {
+        content: '"'
+    }
+
+    a,
+    button {
+        font-size: 15px;
+        text-decoration: none;
+        background-color: #2773E2;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        border: 0;
+    }
+
+    body {
+        text-align: center;
+        background-color: #ecf4f9;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    #container {
+        background-color: white;
+        width: 1000px;
+        margin: auto;
+        padding: 50px;
+        border-radius: 25px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+    }
+</style>
+
 </html>

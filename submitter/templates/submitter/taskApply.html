@@ -2,10 +2,10 @@
 <html>
 
 <body>
-  <div>
+  <div id="container">
     <h1>개인 정보 수집 및 동의 안내</h1>
     <p>
-      {{user}}님, 태스크 {{taskname}} 참여 신청을 위한 개인 정보 수집 및 이용에 동의하십니까? <br>
+      {{user}}님, 태스크 '{{taskname}}' 참여 신청을 위한 개인 정보 수집 및 이용에 동의하십니까? <br>
       YES를 선택하실 경우, 동의하신 걸로 간주되며 자동으로 태스크 참여 신청이 완료됩니다.
     </p>
     <form method="POST" class="post-form">
@@ -30,6 +30,22 @@
     text-align: center;
   }
 
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
   div {
     width: 50%;
     text-align: center;
@@ -52,6 +68,11 @@
     padding: 10px;
     border: 0;
     width: 60px;
+    border-radius: 10px;
+  }
+
+  #yes {
+    cursor: pointer;
   }
 </style>
 

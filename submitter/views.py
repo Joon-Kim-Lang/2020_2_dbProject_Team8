@@ -147,7 +147,7 @@ def datatypeApply(request, taskid):
         cursor=connection.cursor()
 
         # get all the original data types for the task
-        sql = "SELECT NAME, SCHEMAINFO from ORIGINALDATATYPE where TASKID = {}".format(taskid)
+        sql = "SELECT NAME, SCHEMAINFO, SCHEMATYPE from ORIGINALDATATYPE where TASKID = {}".format(taskid)
         result = cursor.execute(sql)
         all_datatype = cursor.fetchall()
 
@@ -164,7 +164,7 @@ def datatypeApply(request, taskid):
         applied_dt = []
 
         for dt in all_datatype:
-            row={'dtName':dt[0], 'info':dt[1]} #row={'dtName':dt[0], 'info':dt[1], 'type':dt[2]} if is 자료형 added
+            row={'dtName':dt[0], 'info':dt[1], 'type':dt[2]}
             all_dt.append(row)
 
         for dt in all_applied_datatype:
@@ -192,7 +192,6 @@ def datatypeApply(request, taskid):
     return render(request, 'submitter/datatypeApply.html', {'form':form, 'all_dt':all_dt, 'applied_dt':applied_dt, 'user':user, 'taskid':taskid})
 
 def datatypeCancel(request, taskid):
-
     user = request.session.get('user')
     if user is None:
         return render(request, 'submitter/wrongAccess.html')

@@ -1,50 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <style>
-  th,
-  td {
-    text-align: center;
-    padding: 15px;
-    border: 1px solid black;
-  }
-
-  th {
-    font-size: 20px;
-    background-color: #2773E2;
-    color: white;
-  }
-
-  table {
-    border-collapse: collapse;
-    margin: 15px;
-    width: 1000px;
-  }
-</style>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
 
-    {% for name in FILE_NAME %}
-    <h1> {{ name }} </h1>
-    {% endfor %}
-    {% if COL_INFO %}
-    <table>
-        {% for col_name in COL_INFO %}
-            <th>{{ col_name }}</th>
+<body>
+    <div id="container">
+        {% for name in FILE_NAME %}
+        <h1> {{ name }} </h1>
         {% endfor %}
-        {% for data in PAR_INFO %}
+        {% if COL_INFO %}
+        <table>
+            {% for col_name in COL_INFO %}
+            <th>{{ col_name }}</th>
+            {% endfor %}
+            {% for data in PAR_INFO %}
             <tr>
                 {% for d in data %}
-                    <td> {{ d }}</td>
+                <td> {{ d }}</td>
                 {% endfor %}
             </tr>
-        {% endfor%}
+            {% endfor%}
+        </table>
+        {% endif %}
 
-
-    </table>
-{% endif %}
-    <a href="{% url 'evaluater:evaluateMain' %}">돌아가기</a>
+        <a id="back" href="{% url 'evaluater:evaluateMain' %}">돌아가기</a>
+    </div>
 </body>
+
+<style>
+    #back {
+        margin: 50px auto;
+        display: inline-block;
+    }
+
+    /* common */
+    th,
+    td {
+        text-align: center;
+        padding: 15px;
+        border-bottom: 1px solid #CECECE;
+    }
+
+    th {
+        font-size: 20px;
+        color: #454545;
+    }
+
+    td {
+        color: #707070;
+    }
+
+    tr {
+        border-bottom: 1px solid #CECECE;
+    }
+
+    tr:last-child td {
+        border-bottom: 0;
+    }
+
+    table {
+        margin: 15px auto;
+        width: 1000px;
+        border-radius: 25px;
+        border: 1px solid #CECECE;
+        box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
+    }
+
+    h1,
+    h2,
+    h3 {
+        color: #2773E2;
+    }
+
+    h2::before,
+    h2::after {
+        content: '"'
+    }
+
+    a,
+    button {
+        font-size: 15px;
+        text-decoration: none;
+        background-color: #2773E2;
+        color: white;
+        padding: 10px;
+        border-radius: 10px;
+        border: 0;
+    }
+
+    body {
+        text-align: center;
+        background-color: #ecf4f9;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    #container {
+        background-color: white;
+        width: 1000px;
+        margin: auto;
+        padding: 50px;
+        border-radius: 25px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+    }
+</style>
+
 </html>

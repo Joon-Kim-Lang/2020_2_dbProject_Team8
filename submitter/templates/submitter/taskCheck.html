@@ -7,72 +7,136 @@
 </head>
 
 <body>
-  <h1>태스크 현황 확인</h1>
-  <h2>전체 결과</h2>
-  <table>
-    <th>제출 파일 수</th>
-    <th>PASS 된 tuple 수</th>
-    <tr>
-      <td>{{total_result.total_submit}}</td>
-      <td>{{total_result.total_pass}}</td>
-    </tr>
-  </table>
-  <h2>원본 데이터 타입 별 확인</h2>
-  <table id="type_check">
-    <th>원본 데이터 타입 명</th>
-    <th>회차</th>
-    <th>데이터 수집 기간</th>
-    <th>tuple수<br>(중복 제외)</th>
-    <th>PASS 여부</th>
-    {% if submit_result|length == 0%}
-    <tr>
-      <td colspan=5>해당 내역이 없습니다.</td>
-    </tr>
-    {% endif %}
-    {% for submit in submit_result %}
-    <tr class="submit">
-      <td>{{submit.dt_name}}</td>
-      <td>{{submit.nth}}</td>
-      <td>{{submit.period}}</td>
-      <td>{{submit.tuple_num}}</td>
-      {% if submit.pnp == null %}
-      <td>평가 전</td>
-      {% else %}
-      <td>{{submit.pnp}}</td>
-      {% endif %}
-    </tr>
-    {% endfor %}
-  </table>
+  <div id="container">
+    <h1>태스크 현황 확인</h1>
+    <div class="section">
+      <h2>전체 결과</h2>
+      <table>
+        <th>제출 파일 수</th>
+        <th>PASS 된 tuple 수</th>
+        <tr>
+          <td>{{total_result.total_submit}}</td>
+          <td>{{total_result.total_pass}}</td>
+        </tr>
+      </table>
+    </div>
 
-  <a href="{% url 'submitter:submitMain' %}">돌아가기</a>
+    <div class="section">
+      <h2>원본 데이터 타입 별 확인</h2>
+      <table id="type_check">
+        <th>원본 데이터 타입 명</th>
+        <th>회차</th>
+        <th>데이터 수집 기간</th>
+        <th>tuple수<br>(중복 제외)</th>
+        <th>PASS 여부</th>
+        {% if submit_result|length == 0%}
+        <tr>
+          <td colspan=5>해당 내역이 없습니다.</td>
+        </tr>
+        {% endif %}
+        {% for submit in submit_result %}
+        <tr class="submit">
+          <td class="type-name">{{submit.dt_name}}</td>
+          <td>{{submit.nth}}</td>
+          <td>{{submit.period}}</td>
+          <td>{{submit.tuple_num}}</td>
+          {% if submit.pnp == null %}
+          <td>평가 전</td>
+          {% else %}
+          <td>{{submit.pnp}}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <a id="back" href="{% url 'submitter:submitMain' %}">돌아가기</a>
+  </div>
 </body>
 
 <style>
+  /* common */
   th,
   td {
     text-align: center;
     padding: 15px;
-    border: 1px solid black;
+    border-bottom: 1px solid #CECECE;
   }
 
   th {
     font-size: 20px;
-    background-color: #2773E2;
-    color: white;
+    color: #454545;
+  }
+
+  td {
+    color: #707070;
+  }
+
+  tr {
+    border-bottom: 1px solid #CECECE;
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .type-name {
+    border-right: 1px solid #CECECE;
   }
 
   table {
-    border-collapse: collapse;
-    margin: 15px;
+    margin: 15px auto;
     width: 1000px;
+    border-radius: 25px;
+    border: 1px solid #CECECE;
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.05);
   }
 
+  h1,
+  h2,
+  h3 {
+    color: #2773E2;
+  }
+
+  h2::before,
+  h2::after {
+    content: '"'
+  }
+
+  button,
   a {
     font-size: 15px;
     text-decoration: none;
     background-color: #2773E2;
     color: white;
     padding: 10px;
+    border-radius: 10px;
+    border: 0;
+  }
+
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  #back {
+    margin: 50px auto;
+    display: inline-block;
+  }
+
+  .section {
+    margin: 50px auto;
   }
 </style>
 

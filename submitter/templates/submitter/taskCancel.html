@@ -7,12 +7,12 @@
 </head>
 
 <body>
-  <div>
+  <div id="container">
     <h1>태스크 신청 취소 확인</h1>
     <p> 정말로 태스크 신청을 취소하시겠습니까?</p>
     <form method="POST">
       {%csrf_token%}
-      <button type="submit">네</button>
+      <button id="yes" type="submit">네</button>
       <a href="{% url 'submitter:submitMain' %}">아니오</a>
     </form>
   </div>
@@ -23,6 +23,22 @@
     font-weight: bold;
     color: #2773E2;
     text-align: center;
+  }
+
+  #container {
+    background-color: white;
+    width: 1000px;
+    margin: auto;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .3);
+  }
+
+  body {
+    text-align: center;
+    background-color: #ecf4f9;
+    padding-top: 50px;
+    padding-bottom: 50px;
   }
 
   div {
@@ -47,6 +63,11 @@
     padding: 10px;
     border: 0;
     width: 60px;
+    border-radius: 10px;
+  }
+
+  #yes {
+    cursor: pointer;
   }
 </style>
 
