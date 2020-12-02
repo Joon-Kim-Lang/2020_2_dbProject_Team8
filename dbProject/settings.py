@@ -58,6 +58,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'dbProject.urls'
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_SAVE_EVERY_REQUEST = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

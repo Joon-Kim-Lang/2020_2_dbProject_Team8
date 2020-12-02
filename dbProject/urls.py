@@ -30,11 +30,14 @@ urlpatterns = [
     path('api/register/', views.register),
     path('api/task/create/', views.createTask),
     path('api/login/', views.login),
-    path('api/getinfo', views.getinfo),
+    path('api/getinfo/', views.getinfo),
     path('api/logout/', views.logout),
     path('api/member/search/', views.searchmember),
     path('api/member/info/', views.memberinfo),
     path('api/task/newodt/', views.addODT),
+    path('api/user/info/', views.userinfo),
+    path('api/user/modify/', views.modifyuser),
+    path('api/user/delete/', views.deleteuser),
 
     # ===================== HJ ======================
     path('api/adminmain/', views.adminMain),

@@ -221,10 +221,11 @@ def login(request):
     response = cursor.fetchall()
     role = response[0][0]
 
-    request.session.loginInfo = {
+    request.session['loginInfo'] = {
         'userid': userid,
         'role': role
     }
+    request.session.modified = True
 
     # connection close
     connection.commit()
@@ -236,9 +237,11 @@ def login(request):
 # GET CURRENT USER INFO
 @api_view(['GET'])
 def getinfo(request):
-    if request.session.get('loginInfo', False):
-        return Response({ info: request.session.loginInfo })
-    else:
+    print(request.session)
+    
+    try:
+        return Response({'info': request.session['loginInfo'] })
+    except:
         return Response(status=401, data={'code': 'No login session'})
 
 # USER LOGGOUT
@@ -419,6 +422,144 @@ def addODT(request):
     except Exception as e:
         connection.rollback()
         return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success'})
+
+# GET USER DETAILED INFO
+@api_view(['POST'])
+def userinfo(request):
+    """
+    Return user's detailed info to modify
+    
+    - Parameter
+    ID
+
+    - Error List
+    RequestError            : invalid request data
+    NoMatchedIDError        : no matched id exists in DB
+    DBQueryError            : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+    
+    # check if ID exists
+    query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # response error msg with fail sign (NoMatchedIDError)
+    if (response[0][0] == 0):
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'NoMatchedIDError'})
+
+    query = f"SELECT * FROM MEMBER WHERE ID = '{userid}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success', 'info': response[0]})
+
+# EDIT USER INFO
+@api_view(['POST'])
+def modifyuser(request):
+    """
+    Modify user infomation
+    
+    - Parameter
+    ID, name, gender, address, birth, phone,
+
+    - Error List
+    RequestError        : invalid request data
+    DuplicateIDError    : already exists ID name in database
+    DBQueryError        : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+        name = request.data['name']
+        address = request.data['address']
+        gender = request.data['gender']
+        phone = request.data['phone']
+        birth = request.data['birth']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+
+    # INSERT new account info into DB
+    try:
+        query = f"""UPDATE MEMBER
+                SET NAME='{name}', ADDR='{address}', GENDER='{gender}', PHONENUM='{phone}', BIRTHDATE='{birth}'
+                WHERE ID='{userid}'
+                """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success'})
+
+# DELETE USER
+@api_view(['POST'])
+def deleteuser(request):
+    """
+    Delete user's id
+    
+    - Parameter
+    ID
+
+    - Error List
+    RequestError            : invalid request data
+    NoMatchedIDError        : no matched id exists in DB
+    DBQueryError            : error occured on db query
+    """
+
+    # parsing request
+    try:
+        userid = request.data['userid']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+    
+    # check if ID exists
+    query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # response error msg with fail sign (NoMatchedIDError)
+    if (response[0][0] == 0):
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'NoMatchedIDError'})
+
+    query = f"DELETE FROM MEMBER WHERE ID = '{userid}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
 
     # connection close
     connection.commit()
