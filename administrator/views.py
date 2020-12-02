@@ -122,8 +122,8 @@ def createTask(request):
     # INSERT new task info into DB
     try:
         query = """INSERT INTO TASK
-                (TASKNAME, MINUPLOADCYCLE, EXPLANATION) 
-                VALUES ('%s', '%s', '%s')
+                (TASKNAME, MINUPLOADCYCLE, EXPLANATION, EVALSCORE) 
+                VALUES ('%s', '%s', '%s', 9)
                 """%(name, minuploadcycle, description)
         cursor.execute(query)
         response = cursor.fetchall()
@@ -368,3 +368,56 @@ def memberinfo(request):
     
     # return success response
     return Response({'state': 'success', 'role': role, 'result': res})
+
+# NEW ORIGINAL DATA TYPE
+@api_view(['POST'])
+def addODT(request):
+    """
+    Add new original data type
+
+    - Parameter
+    taskname, typename(->NAME), ODTschema(->SCHEMATYPE), mappingschema(->MAPPINGSCHEMA)
+
+    - Error List
+    RequestError            : invalid request data
+    DuplicateTaskNameError  : already exists task name in database
+    DuplicateTDTNameError   : already exists TDT name in database
+    DBQueryError            : error occured on db query
+    """
+
+    # parsing request
+    try:
+        taskname = request.data['taskname']
+        typename = request.data['typename']
+        ODTschema = request.data['ODTschema']
+        mappingschema = request.data['mappingschema']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+
+    # get task id
+    query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+    taskid = response[0][0]
+
+    # INSERT new task info into DB
+    try:
+        query = f"""INSERT INTO ORIGINALDATATYPE
+                (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID) 
+                VALUES ('{ODTschema}', '{mappingschema}', '{typename}', '{taskid}')
+                """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    # connection close
+    connection.commit()
+    connection.close()
+    
+    # return success response
+    return Response({'state': 'success'})
