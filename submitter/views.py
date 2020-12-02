@@ -145,7 +145,6 @@ def datatypeApply(request, taskid):
 
     def get_info():
         cursor=connection.cursor()
-
         # get all the original data types for the task
         sql = "SELECT NAME, SCHEMAINFO, SCHEMATYPE from ORIGINALDATATYPE where TASKID = {}".format(taskid)
         result = cursor.execute(sql)
@@ -155,6 +154,11 @@ def datatypeApply(request, taskid):
         sql = "SELECT DATATYPE_NAME, SCHEMAINFO, SCHEMATYPE, SUBMITTER, APPLYNUM FROM APPLIED_DATATYPE where TASKID = {}".format(taskid)
         result = cursor.execute(sql)
         all_applied_datatype = cursor.fetchall()
+
+        # get required data types to inform
+        sql = "SELECT TDTSCHEMA FROM TASKDATATABLE where TASKID = {}".format(taskid)
+        result = cursor.execute(sql)
+        required_datatype = cursor.fetchall()
 
         connection.commit()
         connection.close()
@@ -171,7 +175,7 @@ def datatypeApply(request, taskid):
             row={'dtName':dt[0], 'info':dt[1], 'type':dt[2], 'submitter':dt[3], 'applynum':dt[4]}
             applied_dt.append(row)
 
-        return all_dt, applied_dt
+        return all_dt, applied_dt, required_datatype[0][0]
 
     if request.method == "POST":
         form = originalDTForm(request.POST)
@@ -187,9 +191,9 @@ def datatypeApply(request, taskid):
 
     else:
         form = originalDTForm()
-        all_dt, applied_dt = get_info()
+        all_dt, applied_dt, required_datatype = get_info()
 
-    return render(request, 'submitter/datatypeApply.html', {'form':form, 'all_dt':all_dt, 'applied_dt':applied_dt, 'user':user, 'taskid':taskid})
+    return render(request, 'submitter/datatypeApply.html', {'form':form, 'all_dt':all_dt, 'applied_dt':applied_dt, 'user':user, 'taskid':taskid, 'required_dt':required_datatype})
 
 def datatypeCancel(request, taskid):
     user = request.session.get('user')
