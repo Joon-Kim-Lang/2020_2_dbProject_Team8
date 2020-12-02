@@ -25,7 +25,8 @@ urlpatterns = [
     # ==========================
     # ADMINISTRATOR URL PATTERNS
     # ==========================
-    # Register
+    
+    # ===================== JH ======================
     path('api/register/', views.register),
     path('api/task/create/', views.createTask),
     path('api/login/', views.login),
@@ -33,5 +34,11 @@ urlpatterns = [
     path('api/logout/', views.logout),
     path('api/member/search/', views.searchmember),
     path('api/member/info/', views.memberinfo),
-    path('api/task/newodt/', views.addODT)
+    path('api/task/newodt/', views.addODT),
+
+    # ===================== HJ ======================
+    path('api/adminmain/', views.adminMain),
+    path('api/task/administrate/', views.taskAdministration),
+    path('api/task/statistics/', views.taskStatistics),
+    path('api/task/now/', views.taskNow),
 ]
