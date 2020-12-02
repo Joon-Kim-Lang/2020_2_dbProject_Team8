@@ -2,6 +2,22 @@
 
 <body>
   <div id="container">
+    <div class="section">
+      <h2>
+        제출 시 안내사항
+      </h2>
+      <div id="how">
+        제출하려는 데이터 파일에는 아래에 표시되어 있는 필수 입력 열이 포함되어야 합니다.<br><br>
+        '스키마 타입 선택' 메뉴에서 제출하려는 형식에 알맞는 타입을 고르시거나<br>
+        알맞는 타입이 없을 경우 APPLY버튼을 통해서 알맞는 형식을 신청해주시면 됩니다.<br><br>
+
+        <span class="star">**</span>  스키마에 알맞지 않은 정보가 제출될 경우, 평가 점수에 악영향을 미칠 수 있습니다.<span class="star">**</span>
+      </div>
+      <div id="possible-types">
+        <p><u>현 태스크의 필수 입력 열</u></p>
+        <p>{{required_dt}}</p>
+      </div>
+    </div>
     <h1>파일 제출</h1>
     <form action="{% url 'submitter:taskSubmit' taskid=taskId %}" method="POST" enctype="multipart/form-data"
       class="form-horizontal">
@@ -54,6 +70,15 @@
 </body>
 
 <style>
+#possible-types {
+  border-radius: 25px;
+  padding: 30px;
+  text-align: center;
+  width: 600px;
+  margin: 30px auto;
+  background-color: #ecf4f9;
+  border: 0;
+}
   .star {
     color: red;
   }

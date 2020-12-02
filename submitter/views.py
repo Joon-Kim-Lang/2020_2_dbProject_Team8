@@ -249,6 +249,10 @@ def taskSubmit(request,taskid):
             result = cursor.execute(strSql)
             totalSubmission = cursor.fetchall()
 
+            strSql = "SELECT TDTSCHEMA FROM TASKDATATABLE where TASKID = {}".format(taskid)
+            result = cursor.execute(strSql)
+            required_datatype = cursor.fetchall()[0][0]
+
             connection.commit()
             connection.close()
             curSubmission = int(totalSubmission[0][0]) + 1
@@ -256,7 +260,7 @@ def taskSubmit(request,taskid):
         except:
                 connection.rollback()
 
-        return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid,'curSubmission':curSubmission})
+        return render(request, "submitter/Submitting.html", {'context': context ,'taskId' : taskid,'curSubmission':curSubmission, 'required_dt':required_datatype})
     # if not GET, then proceed
     try:
 
