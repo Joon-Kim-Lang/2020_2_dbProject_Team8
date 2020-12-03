@@ -6,7 +6,8 @@ import { combineReducers } from 'redux';
 
 import authentication from './authentication';
 import task from './task';
+import manage from './manage'
 
 export default combineReducers({
-    authentication, task
+    authentication, task, manage
 });
