@@ -46,4 +46,8 @@ urlpatterns = [
     path('api/task/now/', views.taskNow),
 
     # ===================== HM ======================
+    path('api/task/manage/', views.manageMain),
+    path('api/member/allow/', views.addParticipant),
+    path('api/task/allowodt/', views.addDatatype),
+    path('api/task/setpass/', views.setPassval),
 ]
