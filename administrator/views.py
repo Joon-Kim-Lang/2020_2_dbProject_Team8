@@ -5,10 +5,10 @@ from django.shortcuts import render
 # db connection
 from django.db import connection
 
-# json 
+# json
 import json
 
-# time 
+# time
 from datetime import date
 
 user = 'admin'
@@ -20,7 +20,7 @@ user = 'admin'
 def register(request):
     """
     Register new user
-    
+
     - Parameter
     ID, password, name, gender, address, birth, phone, role(unchangable)
 
@@ -45,7 +45,7 @@ def register(request):
 
     # DB connection
     cursor = connection.cursor()
-    
+
     # check duplicate ID
     query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
     cursor.execute(query)
@@ -59,7 +59,7 @@ def register(request):
     # INSERT new account info into DB
     try:
         query = """INSERT INTO MEMBER
-                (ID, PASSWORD, NAME, ADDR, GENDER, PHONENUM, BIRTHDATE, ROLE) 
+                (ID, PASSWORD, NAME, ADDR, GENDER, PHONENUM, BIRTHDATE, ROLE)
                 VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
                 """%(userid, password, name, address, gender, phone, birth, role)
         cursor.execute(query)
@@ -71,7 +71,7 @@ def register(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success'})
 
@@ -127,7 +127,7 @@ def createTask(request):
     # INSERT new task info into DB
     try:
         query = """INSERT INTO TASK
-                (TASKNAME, MINUPLOADCYCLE, EXPLANATION, EVALSCORE) 
+                (TASKNAME, MINUPLOADCYCLE, EXPLANATION, EVALSCORE)
                 VALUES ('%s', '%s', '%s', 9)
                 """%(name, minuploadcycle, description)
         cursor.execute(query)
@@ -144,7 +144,7 @@ def createTask(request):
 
     try:
         query = """INSERT INTO TASKDATATABLE
-                (TDTNAME, TDTSCHEMA, TASKID) 
+                (TDTNAME, TDTSCHEMA, TASKID)
                 VALUES ('%s', '%s', '%s')
                 """%(tdtname, tdtschema, taskID)
         cursor.execute(query)
@@ -165,7 +165,7 @@ def createTask(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success'})
 
@@ -174,7 +174,7 @@ def createTask(request):
 def login(request):
     """
     User login
-    
+
     - Parameter
     ID, password
 
@@ -194,7 +194,7 @@ def login(request):
 
     # DB connection
     cursor = connection.cursor()
-    
+
     # check if ID exists
     query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
     cursor.execute(query)
@@ -230,7 +230,7 @@ def login(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success', 'role': role})
 
@@ -238,7 +238,7 @@ def login(request):
 @api_view(['GET'])
 def getinfo(request):
     print(request.session)
-    
+
     try:
         return Response({'info': request.session['loginInfo'] })
     except:
@@ -249,7 +249,7 @@ def getinfo(request):
 def logout(request):
     if request.session.get('loginInfo'):
         del(request.session['loginInfo'])
-    
+
     return Response({'status': 'success'})
 
 # MEMBER STATISTICS
@@ -257,7 +257,7 @@ def logout(request):
 def searchmember(request):
     """
     Search member from DB with search conditions
-    
+
     - Parameter
     ID, gender, ageFrom, ageTo, role, task
 
@@ -301,7 +301,7 @@ def searchmember(request):
                     WHERE ID IN (SELECT PARSEDID FROM ORIGINALINFO
                     WHERE TYPENUM IN (SELECT SERIALNUM FROM ORIGINALDATATYPE WHERE TASKID = {task})
                     )
-                    )                    
+                    )
                     """
         cursor.execute(query)
         response = cursor.fetchall()
@@ -317,7 +317,7 @@ def searchmember(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({"state": "success", "result" : res })
 
@@ -327,8 +327,8 @@ def memberinfo(request):
     """
     Return member's info
       * Submitter : return participating task, task participate info
-      * Evaluator : return lists of parsing data sequence file 
-    
+      * Evaluator : return lists of parsing data sequence file
+
     - Parameter
     ID, role
 
@@ -357,7 +357,7 @@ def memberinfo(request):
         elif role == 'E':
             query = f""" SELECT * FROM PARSEDINFO WHERE EVALID = '{userid}'
                     """
-            
+
         cursor.execute(query)
         response = cursor.fetchall()
     except Exception as e:
@@ -373,7 +373,7 @@ def memberinfo(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success', 'role': role, 'result': res})
 
@@ -414,7 +414,7 @@ def addODT(request):
     # INSERT new task info into DB
     try:
         query = f"""INSERT INTO ORIGINALDATATYPE
-                (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID) 
+                (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID)
                 VALUES ('{ODTschema}', '{mappingschema}', '{typename}', '{taskid}')
                 """
         cursor.execute(query)
@@ -426,7 +426,7 @@ def addODT(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success'})
 
@@ -435,7 +435,7 @@ def addODT(request):
 def userinfo(request):
     """
     Return user's detailed info to modify
-    
+
     - Parameter
     ID
 
@@ -453,7 +453,7 @@ def userinfo(request):
 
     # DB connection
     cursor = connection.cursor()
-    
+
     # check if ID exists
     query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
     cursor.execute(query)
@@ -471,7 +471,7 @@ def userinfo(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success', 'info': response[0]})
 
@@ -480,7 +480,7 @@ def userinfo(request):
 def modifyuser(request):
     """
     Modify user infomation
-    
+
     - Parameter
     ID, name, gender, address, birth, phone,
 
@@ -519,7 +519,7 @@ def modifyuser(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success'})
 
@@ -528,7 +528,7 @@ def modifyuser(request):
 def deleteuser(request):
     """
     Delete user's id
-    
+
     - Parameter
     ID
 
@@ -546,7 +546,7 @@ def deleteuser(request):
 
     # DB connection
     cursor = connection.cursor()
-    
+
     # check if ID exists
     query = "SELECT COUNT(*) FROM MEMBER WHERE ID = '%s'"%(userid)
     cursor.execute(query)
@@ -564,7 +564,7 @@ def deleteuser(request):
     # connection close
     connection.commit()
     connection.close()
-    
+
     # return success response
     return Response({'state': 'success'})
 
@@ -589,7 +589,7 @@ def taskStatistics(request):
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
-    try:        
+    try:
         cursor = connection.cursor()
 
         #the total number of files submitted for each task
@@ -625,7 +625,7 @@ def taskStatistics(request):
         result = cursor.execute(strSql)
         orignalStoredTuple = cursor.fetchall()
 
-        #the list of submitters participating in each task 
+        #the list of submitters participating in each task
         strSql = '''SELECT T.TASKNAME, M.ID, M.NAME
                         FROM TASK T, APPLY A, MEMBER M
                         WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
@@ -633,18 +633,18 @@ def taskStatistics(request):
         result = cursor.execute(strSql)
         participatingSubmitter = cursor.fetchall()
 
-        
+
 
         file_task=[]
         tuple_task=[]
         file_original=[]
         tuple_original=[]
         submitter_now=[]
-        
+
         for singleFile in submittedFile:
             row = {'TaskName': singleFile[0], 'count':singleFile[1]}
             file_task.append(row)
-        
+
         for singleTuple in storedTuple:
             row = {'TaskName': singleTuple[0], 'count':singleTuple[1]}
             tuple_task.append(row)
@@ -657,11 +657,11 @@ def taskStatistics(request):
         for originalTuple in orignalStoredTuple:
             row = {'OriginalName': originalTuple[0], 'count':originalTuple[1]}
             tuple_original.append(row)
-        
+
         for nowSubmitter in participatingSubmitter:
             row = {'TaskName': nowSubmitter[0], 'SubmitterID':nowSubmitter[1], 'SubmitterName':nowSubmitter[2]}
             submitter_now.append(row)
-        
+
 
     except Exception as e:
         connection.rollback()
@@ -682,7 +682,7 @@ def taskNow(request, name):
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
-    try:        
+    try:
         cursor = connection.cursor()
 
         #the list of tasks that each submitter is participating in
@@ -690,7 +690,7 @@ def taskNow(request, name):
                         FROM TASK T, APPLY A, MEMBER M
                         WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP') AND M.NAME = '%s'
                         ORDER BY M.NAME ASC'''%(submittername)
-        
+
         result = cursor.execute(strSql)
         participatingTask = cursor.fetchall()
 
@@ -703,10 +703,184 @@ def taskNow(request, name):
     except Exception as e:
         connection.rollback()
         return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
-    
+
     connection.commit()
     connection.close()
 
     return Response({'state': 'success', 'name': name, 'task_now':task_now})
 
+
 # ===================== HM ======================
+#main page in managing task, show current task list
+@api_view(['POST'])
+def manageMain(request):
+
+    #get current existing tasks' info
+    try:
+        # DB connection
+        cursor = connection.cursor()
+
+        #GET CURRENT EXISTING TASK
+        strSql = '''SELECT ID, TASKNAME, EXPLANATION
+                    FROM TASK
+                    ORDER BY TASKNAME'''
+
+        result = cursor.execute(strSql)
+        existingTask = cursor.fetchall()
+
+        task_list = []
+
+        for task in existingTask:
+            row = {'TaskID':task[0], 'TaskName':task[1], 'Explanation': task[3]}
+            task_list.append(row)
+
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state':'fail', 'code':'DBQueryError : ' + str(e)})
+
+    # DB disconnect
+    connection.commit()
+    connection.close()
+
+    return Response({'state':'success', 'task_list':task_list})
+
+
+#add submitter to task by admin acceptance
+@api_view(['POST'])
+def addParticipant(request):
+
+    #parse data
+    try:
+        member_id = request.data['member_id']
+        taskname = request.data['taskname']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    #DB connection
+    cursor = connection.cursor()
+
+    # get task id
+    query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+    taskid = response[0][0]
+
+    # Accept submitter to task
+    try:
+        query = f"""UPDATE APPLY
+                    SET ACCEPTED='P'
+                    WHERE ID='{member_id}' AND TASKID='{taskid}'
+                    """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    connection.commit()
+    connection.close()
+
+    return Response({'state':'success'})
+
+
+#add submitter requested original datatype by admin(different function from addODT)
+@api_view(['POST'])
+def addDatatype(request):
+
+    # parse request
+    try:
+
+        taskname = request.data['taskname']
+        datatypename = request.data['datatypename']
+        mappingschema = request.data['mappingschema']
+
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    # DB connection
+    cursor = connection.cursor()
+
+    # get task id
+    query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+    taskid = response[0][0]
+
+    # get applynum(pk for applied_datatype)
+    query = f" SELECT APPLYNUM FROM APPLIED_DATATYPE WHERE TASKID = '{taskid}'AND DATATYPE_NAME = '{datatypename}' "
+    cursor.execute(query)
+    response = cursor.fetchall()
+    applynum = response[0][0]
+
+    #get ODT infomations
+    strSql = """SELECT DATATYPE_NAME, SCHEMAINFO,
+                FROM APPLIED_DATATYPE
+                WHERE APPLYNUM= '%s' """%(applynum)
+    result = cursor.execute(strSql)
+    ODTinfo = cursor.fetchall()
+
+    typename= ODTinfo[0]
+    ODTschema =ODTinfo[1]
+
+
+    #add ODT to task
+    try:
+        query = f"""INSERT INTO ORIGINALDATATYPE
+                    (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID)
+                    VALUES ('{ODTschema}', '{mappingschema}', '{typename}', '{taskid}')
+                    """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    #delete ODT from waiting list
+    query = f"DELETE FROM APPLIED_DATATYPE WHERE APPLYNUM = '{applynum}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+
+    # connection close
+    connection.commit()
+    connection.close()
+
+    # return success response
+    return Response({'state': 'success'})
+
+
+#set pass value for task
+@api_view(['POST'])
+def setPassval(request):
+    # parse request
+    try:
+        taskname = request.data['taskname']
+        passval = request.data['passval']
+
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    #DB connection
+    cursor = connection.cursor()
+
+    # get task id
+    query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+    cursor.execute(query)
+    response = cursor.fetchall()
+    taskid = response[0][0]
+
+    # Set pass value for task
+    try:
+        query = f"""UPDATE TASK
+                    SET EVALSCORE='{passval}'
+                    WHERE ID='{taskid}'
+                    """
+        cursor.execute(query)
+        response = cursor.fetchall()
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    connection.commit()
+    connection.close()
+
+    return Response({'state': 'success'})

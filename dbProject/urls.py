@@ -21,11 +21,11 @@ from administrator import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('submitter/', include('submitter.urls')),
- 
+
     # ==========================
     # ADMINISTRATOR URL PATTERNS
     # ==========================
-    
+
     # ===================== JH ======================
     path('api/register/', views.register),
     path('api/task/create/', views.createTask),
@@ -44,4 +44,6 @@ urlpatterns = [
     path('api/task/administrate/', views.taskAdministration),
     path('api/task/statistics/', views.taskStatistics),
     path('api/task/now/', views.taskNow),
+
+    # ===================== HM ======================
 ]
