@@ -50,20 +50,20 @@ class Pop extends Component {
                 </div>
 
                 <div className="body">
-                    <header>테스크 통계 화면(제출자 검색)</header>
+                    <header>태스크 통계 화면(제출자 검색)</header>
                     <div className="wrapper">
                         <h6>
-                            제출자가 참여 중인 테스크
+                            제출자가 참여 중인 태스크
                         </h6>
                         <div className="table">
                             <div className="row2-header">
-                                <div className="cell">파일 개수</div>
+                                <div className="cell">태스크명</div>
                             </div>
                             {this.state.ItemList &&
                                 this.state.ItemList.map((itemdata) => {
                                     return (
-                                        <div className="row2" key={itemdata[1]}>
-                                            <div className="cell" data-title="FileCount">{itemdata[1]}</div>
+                                        <div className="row2" key={itemdata[0]}>
+                                            <div className="cell" data-title="FileCount">{itemdata[0]}</div>
                                         </div>
                                     );
                                 })
@@ -94,7 +94,7 @@ class TaskNow extends Component {
         return (
             <div className="wrapper">
                 <h6>
-                    각 테스크에 참여 중인 제출자들의 목록
+                    각 태스크에 참여 중인 제출자들의 목록
                 </h6>
                 <div className="table">
                     <div className="row2-header">

@@ -66,11 +66,11 @@ class TaskStatistic extends Component {
                 <div className="body body-s">
                     <div action="" className="sky-form">
 
-                        <header>테스크 통계 화면</header>
+                        <header>태스크 통계 화면</header>
 
                         <div className="wrapper">
                             <h6>
-                                각 테스크 별로 전체 제출된 파일 수
+                                각 태스크 별로 전체 제출된 파일 수
                             </h6>
                             <div className="table">
 
@@ -94,7 +94,7 @@ class TaskStatistic extends Component {
 
                         <div className="wrapper">
                             <h6>
-                                각 테스크별로 pass되어 테스크 데이터 테이블에 저장된 tupel 수
+                                각 태스크별로 pass되어 테스크 데이터 테이블에 저장된 tupel 수
                             </h6>
                             <div className="table">
                                 <div className="row2-header">
@@ -138,7 +138,7 @@ class TaskStatistic extends Component {
 
                         <div className="wrapper">
                             <h6>
-                                각 원본 데이터 타입별로 pass되어 테스크 데이터 테이블에 저장된 tuple 수
+                                각 원본 데이터 타입별로 pass되어 태스크 데이터 테이블에 저장된 tuple 수
                             </h6>
                             <div className="table">
                                 <div className="row2-header">
