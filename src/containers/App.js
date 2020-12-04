@@ -5,7 +5,7 @@ import Header  from '../components/Header';
 import { connect } from 'react-redux';
 import { getStatusRequest, logoutRequest } from '../actions/authentication';
 
-class App extends Component { 
+class App extends Component {
     componentDidMount() {
         // get cookie by name
         function getCookie(name) {
@@ -21,7 +21,7 @@ class App extends Component {
 
         // decode and parse
         loginData = JSON.parse(atob(loginData));
-        
+
         // if not logged in, do nothing
         if(!loginData.isLoggedIn) return;
 

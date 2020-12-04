@@ -14,6 +14,10 @@ class ManageTask extends Component {
                             <li>
                                 <Link to="/admin/adminhome">관리자 홈</Link>
                             </li>
+                            <li>
+                                <Link to="/admin/managetask">태스크 관리 홈</Link>
+
+                            </li>
                         </ul>
                     </nav>
                 </div>
