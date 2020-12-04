@@ -5,11 +5,11 @@ const initialState = {
         status: 'INIT',
         error: -1
     },
-    allow: {
+    allowsubmitter: {
         status: 'INIT',
         error: -1
     },
-    addto: {
+    addord: {
         status: 'INIT',
         error: -1
     }
@@ -19,10 +19,18 @@ const initialState = {
 
 export default function manage(state = initialState, action) {
     switch(action.type) {
+        case types.MANAGE_MAIN:
+            return {
+                ...state,
+                manage: {
+                    ...state.register
+                    status: 'SUCCESS'
+                }
+            }
         case types.PARTICIPANT_ADD:
             return {
                 ...state,
-                allow: {
+                allowsubmitter: {
                     status: 'WAITING',
                     error: -1
                 }
@@ -30,7 +38,7 @@ export default function manage(state = initialState, action) {
         case types.PARTICIPANT_ADD_SUCCESS:
             return {
                 ...state,
-                allow: {
+                allowsubmitter: {
                     ...state.register,
                     status: 'SUCCESS'
                 }
@@ -38,7 +46,7 @@ export default function manage(state = initialState, action) {
         case types.PARTICIPANT_ADD_FAILURE:
             return {
                 ...state,
-                allow: {
+                allowsubmitter: {
                     status: 'FAILURE',
                     error: action.error
                 }
@@ -46,7 +54,7 @@ export default function manage(state = initialState, action) {
         case types.DATATYPE_ADD:
             return {
                 ...state,
-                addto: {
+                addord: {
                     status: 'WAITING',
                     error: -1
                 }
@@ -54,7 +62,7 @@ export default function manage(state = initialState, action) {
         case types.DATATYPE_ADD_SUCCESS:
             return {
                 ...state,
-                addto: {
+                addord: {
                     ...state.register,
                     status: 'SUCCESS'
                 }
@@ -62,7 +70,7 @@ export default function manage(state = initialState, action) {
         case types.DATATYPE_ADD_FAILURE:
             return {
                 ...state,
-                addto: {
+                addord: {
                     status: 'FAILURE',
                     error: action.error
                 }

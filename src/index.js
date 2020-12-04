@@ -5,7 +5,7 @@ import './style.css';
 
 // Routing
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Register, Login, Create } from './containers';
+import { Register, Login, Create, Manage } from './containers';
 import { AdminHome, CreateTask, ManageTask, TaskStatistic, User } from './components';
 
 // Redux
