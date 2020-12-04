@@ -845,7 +845,7 @@ def getWaitingODT(request):
         taskid = response[0][0]
 
         #GET CURRENT EXISTING TASK
-        strSql = '''SELECT SCHEMAINFO, SCHEMATYPE
+        strSql = '''SELECT DATATYPE_NAME SCHEMAINFO, SCHEMATYPE
                     FROM APPLIED_DATATYPE
                     WHERE TASKID = '%s'
                     '''%(taskid)
@@ -856,7 +856,7 @@ def getWaitingODT(request):
         waitingODTList = []
 
         for ODT in waitingODT:
-            row = {'SCHEMAINFO': ODT[0], 'SCHEMATYPE': ODT[1]}
+            row = {'DATATYPE_NAME':ODT[0] 'SCHEMAINFO': ODT[1], 'SCHEMATYPE': ODT[2]}
             waitingODTList.append(row)
 
     except Exception as e:
@@ -879,7 +879,7 @@ def addDatatype(request):
 
         taskname = request.data['taskname']
         datatypename = request.data['datatypename']
-        mappingschema = request.data['mappingschema']
+        #mappingschema = request.data['mappingschema']
 
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
@@ -913,8 +913,8 @@ def addDatatype(request):
     #add ODT to task
     try:
         query = f"""INSERT INTO ORIGINALDATATYPE
-                    (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID)
-                    VALUES ('{ODTschema}', '{mappingschema}', '{typename}', '{taskid}')
+                    (SCHEMATYPE, NAME, TASKID)
+                    VALUES ('{ODTschema}', '{typename}', '{taskid}')
                     """
         cursor.execute(query)
         response = cursor.fetchall()
