@@ -404,7 +404,7 @@ def taskCheck(request, taskid):
                 'pnp':submit[5]}
         submit_result.append(row)
 
-    sql = "SELECT project.APPLY.TOTALSUBMISSION, project.APPLY.ACCEPTEDTUPLE FROM project.APPLY where project.APPLY.MEMID = '{}' and project.APPLY.TASKID = {};".format(user, taskid)
+    sql = "SELECT APPLY.TOTALSUBMISSION, APPLY.ACCEPTEDTUPLE FROM APPLY where APPLY.MEMID = '{}' and APPLY.TASKID = {};".format(user, taskid)
     result = cursor.execute(sql)
     total_result = cursor.fetchall()
     total_result = {'total_submit':total_result[0][0], 'total_pass':total_result[0][1]}
