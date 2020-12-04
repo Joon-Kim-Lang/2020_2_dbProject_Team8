@@ -746,17 +746,27 @@ def manageMain(request):
 
 @api_view(['POST'])
 def getWaitingMember(request):
+    try:
+        taskname = request.data['taskname']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
 
     try:
         # DB connection
         cursor = connection.cursor()
 
+        # get task id
+        query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+        cursor.execute(query)
+        response = cursor.fetchall()
+        taskid = response[0][0]
+
         #GET members
         strSql = '''SELECT M.ID, M.NAME, M.EVALSCORE
                     FROM MEMBER M, APPLY A
-                    WHERE A.MEMID = M.ID
-                    '''
+                    WHERE A.MEMID = M.ID AND A.TASKID = '%s'
+                    ''' %(taskid)
 
         result = cursor.execute(strSql)
         waitingMem = cursor.fetchall()
@@ -776,8 +786,6 @@ def getWaitingMember(request):
     connection.close()
 
     return Response({'state':'success', 'waitingMemList':waitingMemList})
-
-
 
 #add submitter to task by admin acceptance
 @api_view(['POST'])
@@ -819,16 +827,28 @@ def addParticipant(request):
 
 @api_view(['POST'])
 def getWaitingODT(request):
-
+    # parse data
+    try:
+        member_id = request.data['member_id']
+        taskname = request.data['taskname']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
     try:
         # DB connection
         cursor = connection.cursor()
 
+        # get task id
+        query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+        cursor.execute(query)
+        response = cursor.fetchall()
+        taskid = response[0][0]
+
         #GET CURRENT EXISTING TASK
         strSql = '''SELECT SCHEMAINFO, SCHEMATYPE
                     FROM APPLIED_DATATYPE
-                    '''
+                    WHERE TASKID = '%s'
+                    '''%(taskid)
 
         result = cursor.execute(strSql)
         waitingODT = cursor.fetchall()
