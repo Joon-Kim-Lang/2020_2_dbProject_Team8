@@ -12,7 +12,6 @@ class Pop extends Component {
 
     loadData = async () => {
         axios.post("http://localhost:3000/api/task/now/", {
-            "taskname": this.props.taskname,
             "submittername": this.props.submittername,
         }).then((response) => {
             this.setState({
@@ -35,30 +34,27 @@ class Pop extends Component {
     }
 
     render() {
-        const adminView = (
+        return (
             <div>
-
-                    <div>
-                        <nav>
-                            <ul>
-                                <li>
-                                    <Link to="/admin/adminhome">관리자 홈</Link>
-                                </li>
-                                <li>
-                                    <Link to="/admin/taskstatistics/">태스크 통계</Link>
-                                </li>
-                            </ul>
-                        </nav>
-
-                    </div>
+                <div>
+                    <nav>
+                        <ul>
+                            <li>
+                                <Link to="/admin/adminhome">관리자 홈</Link>
+                            </li>
+                            <li>
+                                <Link to="/admin/taskstatistics/">태스크 통계</Link>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
 
                 <div className="body">
                     <header>테스크 통계 화면(제출자 검색)</header>
-
                     <div className="wrapper">
-                        <h3>
+                        <h6>
                             제출자가 참여 중인 테스크
-                        </h3>
+                        </h6>
                         <div className="table">
                             <div className="row2-header">
                                 <div className="cell">파일 개수</div>
@@ -74,25 +70,6 @@ class Pop extends Component {
                             }
                         </div>
                     </div>
-
-                </div>
-            </div>
-        );
-
-        const nonadminView = (
-            <div>{this.state.ItemList}</div>
-        );
-
-        return (
-            <div className='popup'>
-                <div className='popup_inner'>
-                    <div className="modal-header">
-                        <h3>{id}</h3>
-                    </div>
-                    <div className="modal-body">
-                        {(role === 'A' ? adminView : nonadminView)}
-                    </div>
-                    <div className="button_round" onClick={this.props.closePopup}>Close</div>
                 </div>
             </div>
         );
@@ -102,15 +79,13 @@ class Pop extends Component {
 class TaskNow extends Component {
     state = {
         toggle: false,
-        id: '',
-        role: ''
+        submittername: ''
     };
 
-    togglePop = (taskname, submittername) => {
+    togglePop = (submittername) => {
         this.setState({
             toggle: !this.state.toggle,
-            id: id,
-            role: role
+            submittername: submittername
         });
     };
 
@@ -118,10 +93,13 @@ class TaskNow extends Component {
         const { Itemcard } = this.props;
         return (
             <div className="wrapper">
+                <h6>
+                    각 테스크에 참여 중인 제출자들의 목록
+                </h6>
                 <div className="table">
                     <div className="row2-header">
-                        <div className="cell">taskname</div>
-                        <div className="cell">submittername</div>
+                        <div className="cell">태스크명</div>
+                        <div className="cell">제출자명</div>
                     </div>
                     {Itemcard &&
                         Itemcard.map((itemdata5) => {
@@ -133,7 +111,7 @@ class TaskNow extends Component {
                             );
                         })
                     }
-                    {this.state.toggle ? <Pop taskname={this.state.taskname} submittername={this.state.submittername} closePopup={this.togglePop.bind(this)} /> : null}
+                    {this.state.toggle ? <Pop submittername={this.state.submittername} closePopup={this.togglePop.bind(this)} /> : null}
                 </div>
             </div>
         );

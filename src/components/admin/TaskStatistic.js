@@ -21,8 +21,7 @@ class TaskStatistic extends Component {
     loadData = async () => {
 
         axios.post("http://localhost:3000/api/task/statistics/", {
-            "userid": this.props.id,
-            "role": this.props.role,
+
         }).then((response) => {
             this.setState({
                 loading: true,
@@ -70,9 +69,9 @@ class TaskStatistic extends Component {
                         <header>테스크 통계 화면</header>
 
                         <div className="wrapper">
-                            <h3>
+                            <h6>
                                 각 테스크 별로 전체 제출된 파일 수
-                            </h3>
+                            </h6>
                             <div className="table">
 
                                 <div className="row2-header">
@@ -94,9 +93,9 @@ class TaskStatistic extends Component {
                         </div>
 
                         <div className="wrapper">
-                            <h3>
+                            <h6>
                                 각 테스크별로 pass되어 테스크 데이터 테이블에 저장된 tupel 수
-                            </h3>
+                            </h6>
                             <div className="table">
                                 <div className="row2-header">
                                     <div className="cell">태스크명</div>
@@ -116,9 +115,9 @@ class TaskStatistic extends Component {
                         </div>
 
                         <div className="wrapper">
-                            <h3>
+                            <h6>
                                 각 원본 데이터 타입별로 전체 제출된 파일 수
-                            </h3>
+                            </h6>
                             <div className="table">
                                 <div className="row2-header">
                                     <div className="cell">원본 데이터 타입명</div>
@@ -138,9 +137,9 @@ class TaskStatistic extends Component {
                         </div>
 
                         <div className="wrapper">
-                            <h3>
+                            <h6>
                                 각 원본 데이터 타입별로 pass되어 테스크 데이터 테이블에 저장된 tuple 수
-                            </h3>
+                            </h6>
                             <div className="table">
                                 <div className="row2-header">
                                     <div className="cell">원본 데이터 타입명</div>
@@ -152,28 +151,6 @@ class TaskStatistic extends Component {
                                             <div className="row2" key={itemdata4[0]}>
                                                 <div className="cell" data-title="ODTName">{itemdata4[0]}</div>
                                                 <div className="cell" data-title="TupleCount">{itemdata4[1]}</div>
-                                            </div>
-                                        );
-                                    })
-                                }
-                            </div>
-                        </div>
-
-                        <div className="wrapper">
-                            <h3>
-                                각 테스크에 참여 중인 제출자들의 목록
-                            </h3>
-                            <div className="table">
-                                <div className="row2-header">
-                                    <div className="cell">태스크명</div>
-                                    <div className="cell">제출자명</div>
-                                </div>
-                                {this.state.ItemList5 &&
-                                    this.state.ItemList5.map((itemdata5) => {
-                                        return (
-                                            <div className="row2" key={itemdata5[0]}>
-                                                <div className="cell" data-title="TaskName">{itemdata5[0]}</div>
-                                                <div className="cell" data-title="SubmitterName">{itemdata5[1]}</div>
                                             </div>
                                         );
                                     })
