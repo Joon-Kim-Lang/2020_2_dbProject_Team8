@@ -581,8 +581,87 @@ def taskAdministration(request):
     return Response({'state': 'success','user':user})
 
 #TASK STATISTICS
-@api_view(['POST'])
+@api_view(['POST', 'GET', 'OPTIONS'])
 def taskStatistics(request):
+    
+    try:
+        cursor = connection.cursor()
+
+        #the total number of files submitted for each task
+        strSql = '''SELECT T.TASKNAME, COUNT(PI.ID)
+                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
+                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
+                        ORDER BY T.TASKNAME ASC'''
+        result = cursor.execute(strSql)
+        submittedFile = cursor.fetchall()
+
+        #the number of tuples passed and stored in the task data table for each task
+        strSql = '''SELECT T.TASKNAME, COUNT(PI.ID)
+                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
+                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P')
+                        ORDER BY T.TASKNAME ASC'''
+        result = cursor.execute(strSql)
+        storedTuple = cursor.fetchall()
+
+        #the total number of files submitted for each original data type
+        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
+                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
+                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
+                        ORDER BY ODT.SCHEMAINFO ASC'''
+        result = cursor.execute(strSql)
+        originalSubmittedFile = cursor.fetchall()
+
+        #the number of tuples passed and stored in the task data table for each original data type
+        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
+                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
+                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P')
+                        ORDER BY ODT.SCHEMAINFO ASC'''
+        result = cursor.execute(strSql)
+        orignalStoredTuple = cursor.fetchall()
+
+        #the list of submitters participating in each task
+        strSql = '''SELECT T.TASKNAME, M.ID, M.NAME
+                        FROM TASK T, APPLY A, MEMBER M
+                        WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
+                        ORDER BY T.TASKNAME ASC'''
+        result = cursor.execute(strSql)
+        participatingSubmitter = cursor.fetchall()
+
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
+
+    file_task = []
+    tuple_task = []
+    file_original = []
+    tuple_original = []
+    submitter_now = []
+
+    for singleFile in submittedFile:
+        row = [singleFile[0], singleFile[1]]
+        file_task.append(row)
+
+    for singleTuple in storedTuple:
+        row = [singleTuple[0], singleTuple[1]]
+        tuple_task.append(row)
+
+    for originalFile in originalSubmittedFile:
+        row = [originalFile[0], originalFile[1]]
+        file_original.append(row)
+
+    for originalTuple in orignalStoredTuple:
+        row = [originalTuple[0], originalTuple[1]]
+        tuple_original.append(row)
+
+    for nowSubmitter in participatingSubmitter:
+        row = [nowSubmitter[0], nowSubmitter[1], nowSubmitter[2]]
+        submitter_now.append(row)
+
+    connection.commit()
+    connection.close()
+
+    return Response({'state': 'success', 'file_task': file_task, 'tuple_task': tuple_task, 'file_original': file_original,
+                     'tuple_original': tuple_original, 'submitter_now': submitter_now})
     try:
         userid = request.data['userid']
         role = request.data['role']
@@ -674,10 +753,9 @@ def taskStatistics(request):
     'tuple_original':tuple_original, 'submitter_now':submitter_now})
 
 #SHOW THE LIST OF TASKS THAT EACH SUBMITTER IS PARTICIPATING
-@api_view(['POST'])
-def taskNow(request, name):
+@api_view(['POST', 'GET', 'OPTIONS'])
+def taskNow(request):
     try:
-        taskname = request.data['taskname']
         submittername = request.data['submittername']
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
@@ -686,28 +764,28 @@ def taskNow(request, name):
         cursor = connection.cursor()
 
         #the list of tasks that each submitter is participating in
-        strSql = '''SELECT M.NAME, T.TASKNAME
+        strSql = '''SELECT T.TASKNAME
                         FROM TASK T, APPLY A, MEMBER M
-                        WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP') AND M.NAME = '%s'
-                        ORDER BY M.NAME ASC'''%(submittername)
+                        WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP') AND M.ID = '%s'
+                        ORDER BY T.TASKNAME ASC''' % (submittername)
 
         result = cursor.execute(strSql)
         participatingTask = cursor.fetchall()
-
-        task_now=[]
-
-        for nowTask in participatingTask:
-            row = {'SubmitterName': nowTask[0], 'TaskName':nowTask[1]}
-            task_now.append(row)
 
     except Exception as e:
         connection.rollback()
         return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
 
+    task_now = []
+
+    for nowTask in participatingTask:
+        row = [nowTask[0]]
+        task_now.append(row)
+
     connection.commit()
     connection.close()
 
-    return Response({'state': 'success', 'name': name, 'task_now':task_now})
+    return Response({'state': 'success', 'task_now': task_now})
 
 
 # ===================== HM ======================
