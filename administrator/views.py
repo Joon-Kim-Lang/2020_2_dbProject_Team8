@@ -809,7 +809,8 @@ def manageMain(request):
         task_list = []
 
         for task in existingTask:
-            row = {'TaskID':task[0], 'TaskName':task[1], 'Explanation': task[3]}
+            # row = {'TaskID':task[0], 'TaskName':task[1], 'Explanation': task[2]}
+            row = [task[0], task[1], task[2]]
             task_list.append(row)
 
     except Exception as e:
@@ -934,7 +935,7 @@ def getWaitingODT(request):
         waitingODTList = []
 
         for ODT in waitingODT:
-            row = {'DATATYPE_NAME':ODT[0] 'SCHEMAINFO': ODT[1], 'SCHEMATYPE': ODT[2]}
+            row = {'DATATYPE_NAME':ODT[0], 'SCHEMAINFO': ODT[1], 'SCHEMATYPE': ODT[2]}
             waitingODTList.append(row)
 
     except Exception as e:
