@@ -852,9 +852,11 @@ def getWaitingMember(request):
 
         waitingMemList = []
 
+        print(waitingMemList)
+
         for member in waitingMem:
-            row = {'ID': member[0], 'Name': member[1], 'EVALSCORE': member[2]}
-            waitingMemList.append(row)
+            # row = [{'ID': member[0], 'Name': member[1], 'EVALSCORE': member[2]}]
+            waitingMemList.append(member)
 
     except Exception as e:
         connection.rollback()
