@@ -235,11 +235,11 @@ def evalDescription(request, addr) :
 
         result = cursor.execute(strSql)
         par_info = cursor.fetchall()
-        
-        
+
+
         cursor = connection.cursor()
-        strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE 
-                    FROM INFORMATION_SCHEMA.COLUMNS 
+        strSql = '''SELECT COLUMN_NAME,COLUMN_TYPE
+                    FROM INFORMATION_SCHEMA.COLUMNS
                     WHERE TABLE_NAME='%s';''' % (addr)
 
         result = cursor.execute(strSql)
@@ -269,4 +269,3 @@ def evalDescription(request, addr) :
         print("Failed to get Data, e", e)
 
     return render(request, 'evaluater/showfile.html', context)
-
