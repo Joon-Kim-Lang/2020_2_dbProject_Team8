@@ -84,11 +84,11 @@ WSGI_APPLICATION = 'dbProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',	# DB 엔진
-        'NAME': 'project',	# DB 이름
-        'USER': 'dbproject',	# 사용자 이름
-        'PASSWORD': '1q2w3e4r',	# 사용자 비밀번호
-        'HOST': '13.209.88.232',	# 인스턴스 주소(IP), RDS에서의 엔드포인트
-        'PORT': '3306',	# 포트번호
+        'NAME': 'team8',	# DB 이름
+        'USER': 'team8',	# 사용자 이름
+        'PASSWORD': 'team8',	# 사용자 비밀번호
+        'HOST': '165.132.105.42',	# 인스턴스 주소(IP), RDS에서의 엔드포인트
+        'PORT': '3031',	# 포트번호
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
         }
