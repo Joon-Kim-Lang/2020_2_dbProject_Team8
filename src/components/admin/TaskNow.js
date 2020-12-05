@@ -104,9 +104,9 @@ class TaskNow extends Component {
                     {Itemcard &&
                         Itemcard.map((itemdata5) => {
                             return (
-                                <div className="row2" onClick={this.togglePop.bind(this, itemdata5[1])} key={itemdata5[0]}>
+                                <div className="row2" onClick={this.togglePop.bind(this, itemdata5[2])} key={itemdata5[0]}>
                                     <div className="cell" data-title="taskname">{itemdata5[0]}</div>
-                                    <div className="cell" data-title="submittername">{itemdata5[1]}</div>
+                                    <div className="cell" data-title="submittername">{itemdata5[2]}</div>
                                 </div>
                             );
                         })
