@@ -822,6 +822,48 @@ def manageMain(request):
 
     return Response({'state':'success', 'task_list':task_list})
 
+@api_view(['POST'])
+def getWaitingMember(request):
+    try:
+        taskname = request.data['taskname']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+
+    try:
+        # DB connection
+        cursor = connection.cursor()
+
+        # get task id
+        query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+        cursor.execute(query)
+        response = cursor.fetchall()
+        taskid = response[0][0]
+
+        #GET members
+        strSql = '''SELECT M.ID, M.NAME, M.EVALSCORE
+                    FROM MEMBER M, APPLY A
+                    WHERE A.MEMID = M.ID AND A.TASKID = '%s'
+                    ''' %(taskid)
+
+        result = cursor.execute(strSql)
+        waitingMem = cursor.fetchall()
+
+        waitingMemList = []
+
+        for member in waitingMem:
+            row = {'ID': member[0], 'Name': member[1], 'EVALSCORE': member[2]}
+            waitingMemList.append(row)
+
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state':'fail', 'code':'DBQueryError : ' + str(e)})
+
+    # DB disconnect
+    connection.commit()
+    connection.close()
+
+    return Response({'state':'success', 'waitingMemList':waitingMemList})
 
 #add submitter to task by admin acceptance
 @api_view(['POST'])
@@ -861,6 +903,51 @@ def addParticipant(request):
     return Response({'state':'success'})
 
 
+@api_view(['POST'])
+def getWaitingODT(request):
+    # parse data
+    try:
+        member_id = request.data['member_id']
+        taskname = request.data['taskname']
+    except:
+        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
+
+    try:
+        # DB connection
+        cursor = connection.cursor()
+
+        # get task id
+        query = f" SELECT ID FROM TASK WHERE TASKNAME = '{taskname}'"
+        cursor.execute(query)
+        response = cursor.fetchall()
+        taskid = response[0][0]
+
+        #GET CURRENT EXISTING TASK
+        strSql = '''SELECT DATATYPE_NAME SCHEMAINFO, SCHEMATYPE
+                    FROM APPLIED_DATATYPE
+                    WHERE TASKID = '%s'
+                    '''%(taskid)
+
+        result = cursor.execute(strSql)
+        waitingODT = cursor.fetchall()
+
+        waitingODTList = []
+
+        for ODT in waitingODT:
+            row = {'DATATYPE_NAME':ODT[0] 'SCHEMAINFO': ODT[1], 'SCHEMATYPE': ODT[2]}
+            waitingODTList.append(row)
+
+    except Exception as e:
+        connection.rollback()
+        return Response(status=400, data={'state':'fail', 'code':'DBQueryError : ' + str(e)})
+
+    # DB disconnect
+    connection.commit()
+    connection.close()
+
+    return Response({'state':'success', 'waitingMemList':waitingODTList})
+
+
 #add submitter requested original datatype by admin(different function from addODT)
 @api_view(['POST'])
 def addDatatype(request):
@@ -870,7 +957,7 @@ def addDatatype(request):
 
         taskname = request.data['taskname']
         datatypename = request.data['datatypename']
-        mappingschema = request.data['mappingschema']
+        #mappingschema = request.data['mappingschema']
 
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
@@ -904,8 +991,8 @@ def addDatatype(request):
     #add ODT to task
     try:
         query = f"""INSERT INTO ORIGINALDATATYPE
-                    (SCHEMATYPE, MAPPINGSCHEMA, NAME, TASKID)
-                    VALUES ('{ODTschema}', '{mappingschema}', '{typename}', '{taskid}')
+                    (SCHEMATYPE, NAME, TASKID)
+                    VALUES ('{ODTschema}', '{typename}', '{taskid}')
                     """
         cursor.execute(query)
         response = cursor.fetchall()

@@ -50,4 +50,6 @@ urlpatterns = [
     path('api/member/allow/', views.addParticipant),
     path('api/task/allowodt/', views.addDatatype),
     path('api/task/setpass/', views.setPassval),
+    path('api/task/getmember/', views.getWaitingMember)
+    path('api/task/getodt/', views.getWaitingODT)
 ]
