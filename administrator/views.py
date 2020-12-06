@@ -604,7 +604,7 @@ def taskStatistics(request):
         storedTuple = cursor.fetchall()
 
         #the total number of files submitted for each original data type
-        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
+        strSql = '''SELECT ODTSERIALNUM, COUNT(PI.ID)
                         FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
                         WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
                         ORDER BY ODT.SCHEMAINFO ASC'''
@@ -612,7 +612,7 @@ def taskStatistics(request):
         originalSubmittedFile = cursor.fetchall()
 
         #the number of tuples passed and stored in the task data table for each original data type
-        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
+        strSql = '''SELECT ODT.SERIALNUM, COUNT(PI.ID)
                         FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
                         WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P')
                         ORDER BY ODT.SCHEMAINFO ASC'''
@@ -662,101 +662,12 @@ def taskStatistics(request):
 
     return Response({'state': 'success', 'file_task': file_task, 'tuple_task': tuple_task, 'file_original': file_original,
                      'tuple_original': tuple_original, 'submitter_now': submitter_now})
-    try:
-        userid = request.data['userid']
-        role = request.data['role']
-    except:
-        return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
-
-    try:
-        cursor = connection.cursor()
-
-        #the total number of files submitted for each task
-        strSql = '''SELECT T.TASKNAME, COUNT(PI.ID)
-                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
-                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
-                        ORDER BY T.TASKNAME ASC'''
-        result = cursor.execute(strSql)
-        submittedFile = cursor.fetchall()
-
-        #the number of tuples passed and stored in the task data table for each task
-        strSql = '''SELECT T.TASKNAME, COUNT(PI.ID)
-                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
-                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P')
-                        ORDER BY T.TASKNAME ASC'''
-        result = cursor.execute(strSql)
-        storedTuple = cursor.fetchall()
-
-        #the total number of files submitted for each original data type
-        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
-                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
-                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
-                        ORDER BY ODT.SCHEMAINFO ASC'''
-        result = cursor.execute(strSql)
-        originalSubmittedFile = cursor.fetchall()
-
-
-        #the number of tuples passed and stored in the task data table for each original data type
-        strSql = '''SELECT ODT.SCHEMAINFO, COUNT(PI.ID)
-                        FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
-                        WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND  ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P')
-                        ORDER BY ODT.SCHEMAINFO ASC'''
-        result = cursor.execute(strSql)
-        orignalStoredTuple = cursor.fetchall()
-
-        #the list of submitters participating in each task
-        strSql = '''SELECT T.TASKNAME, M.ID, M.NAME
-                        FROM TASK T, APPLY A, MEMBER M
-                        WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
-                        ORDER BY T.TASKNAME ASC'''
-        result = cursor.execute(strSql)
-        participatingSubmitter = cursor.fetchall()
-
-
-
-        file_task=[]
-        tuple_task=[]
-        file_original=[]
-        tuple_original=[]
-        submitter_now=[]
-
-        for singleFile in submittedFile:
-            row = {'TaskName': singleFile[0], 'count':singleFile[1]}
-            file_task.append(row)
-
-        for singleTuple in storedTuple:
-            row = {'TaskName': singleTuple[0], 'count':singleTuple[1]}
-            tuple_task.append(row)
-
-
-        for originalFile in originalSubmittedFile:
-            row = {'OriginalName': originalFile[0],  'count':originalFile[1]}
-            file_original.append(row)
-
-        for originalTuple in orignalStoredTuple:
-            row = {'OriginalName': originalTuple[0], 'count':originalTuple[1]}
-            tuple_original.append(row)
-
-        for nowSubmitter in participatingSubmitter:
-            row = {'TaskName': nowSubmitter[0], 'SubmitterID':nowSubmitter[1], 'SubmitterName':nowSubmitter[2]}
-            submitter_now.append(row)
-
-
-    except Exception as e:
-        connection.rollback()
-        return Response(status=400, data={'state': 'fail', 'code': 'DBQueryError : ' + str(e)})
-
-    connection.commit()
-    connection.close()
-
-    return Response({'state': 'success', 'file_task':file_task, 'tuple_task':tuple_task, 'file_original':file_original,
-    'tuple_original':tuple_original, 'submitter_now':submitter_now})
 
 #SHOW THE LIST OF TASKS THAT EACH SUBMITTER IS PARTICIPATING
 @api_view(['POST', 'GET', 'OPTIONS'])
 def taskNow(request):
     try:
-        submittername = request.data['submittername']
+        submitterID = request.data['submitterID']
     except:
         return Response(status=400, data={'state': 'fail', 'code': 'RequestError'})
 
@@ -767,7 +678,7 @@ def taskNow(request):
         strSql = '''SELECT T.TASKNAME
                         FROM TASK T, APPLY A, MEMBER M
                         WHERE T.ID = A.TASKID AND A.MEMID = M.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP') AND M.ID = '%s'
-                        ORDER BY T.TASKNAME ASC''' % (submittername)
+                        ORDER BY T.TASKNAME ASC''' % (submitterID)
 
         result = cursor.execute(strSql)
         participatingTask = cursor.fetchall()
