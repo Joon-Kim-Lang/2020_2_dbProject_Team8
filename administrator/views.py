@@ -583,7 +583,7 @@ def taskAdministration(request):
 #TASK STATISTICS
 @api_view(['POST', 'GET', 'OPTIONS'])
 def taskStatistics(request):
-    
+
     try:
         cursor = connection.cursor()
 
@@ -755,7 +755,7 @@ def getWaitingMember(request):
         #GET members
         strSql = '''SELECT M.ID, M.NAME, M.EVALSCORE
                     FROM MEMBER M, APPLY A
-                    WHERE A.MEMID = M.ID AND A.TASKID = '%s'
+                    WHERE A.TASKID = '%s' AND A.MEMID = M.ID
                     ''' %(taskid)
 
         result = cursor.execute(strSql)
