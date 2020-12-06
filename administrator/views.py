@@ -604,7 +604,7 @@ def taskStatistics(request):
         storedTuple = cursor.fetchall()
 
         #the total number of files submitted for each original data type
-        strSql = '''SELECT ODTSERIALNUM, COUNT(PI.ID)
+        strSql = '''SELECT ODT.SERIALNUM, COUNT(PI.ID)
                         FROM MEMBER M, APPLY A, TASK T, ORIGINALDATATYPE ODT, ORIGINALINFO OI, PARSEDINFO PI
                         WHERE M.ID = A.MEMID AND A.TASKID = T.ID AND T.ID = ODT.TASKID AND ODT.SERIALNUM = OI.TYPENUM AND OI.PARSEDID = PI.ID AND (A.ACCEPTED = 'P' or A.ACCEPTED IS NULL or A.ACCEPTED = 'NP')
                         ORDER BY ODT.SCHEMAINFO ASC'''
