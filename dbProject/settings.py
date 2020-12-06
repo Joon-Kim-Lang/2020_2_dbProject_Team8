@@ -54,10 +54,9 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-# session destroyed at browser close
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
 ROOT_URLCONF = 'dbProject.urls'
+
+SESSION_SAVE_EVERY_REQUEST = True
 
 TEMPLATES = [
     {
@@ -82,12 +81,24 @@ WSGI_APPLICATION = 'dbProject.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',	# DB 엔진
+    #     'NAME': 'project',	# DB 이름
+    #     'USER': 'dbproject',	# 사용자 이름
+    #     'PASSWORD': '1q2w3e4r',	# 사용자 비밀번호
+    #     'HOST': '13.209.88.232',	# 인스턴스 주소(IP), RDS에서의 엔드포인트
+    #     'PORT': '3306',	# 포트번호
+    #     'OPTIONS': {
+    #         'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
+    #     }
+    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',	# DB 엔진
         'NAME': 'team8',	# DB 이름
         'USER': 'team8',	# 사용자 이름
         'PASSWORD': '720192',	# 사용자 비밀번호
         'HOST': '165.132.105.42',	# 인스턴스 주소(IP), RDS에서의 엔드포인트
+        'PORT': '3306',	# 포트번호
         'OPTIONS': {
             'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"'
         }
